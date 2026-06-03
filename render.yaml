@@ -19,7 +19,10 @@ services:
       - key: JWT_EXPIRE
         value: 30d
       - key: FRONTEND_URL
-        sync: false
+        fromService:
+          name: pro-fitness-frontend
+          type: web
+          property: host
       - key: OPENAI_API_KEY
         sync: false
       - key: STRIPE_SECRET_KEY
@@ -53,8 +56,14 @@ services:
       - key: NODE_VERSION
         value: 20.9.0
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        fromService:
+          name: pro-fitness-backend
+          type: web
+          property: host
       - key: NEXTAUTH_URL
-        sync: false
+        fromService:
+          name: pro-fitness-frontend
+          type: web
+          property: host
       - key: NEXTAUTH_SECRET
         generateValue: true
