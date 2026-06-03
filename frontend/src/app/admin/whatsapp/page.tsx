@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
+import { API_BASE_URL } from '@/lib/utils';
 
 export default function WhatsAppAdminPage() {
   const [status, setStatus] = useState<string>('LOADING');
@@ -20,7 +21,7 @@ export default function WhatsAppAdminPage() {
     try {
       // Setup the API base url, assuming standard backend running on port 5000
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/whatsapp/qr', {
+      const response = await axios.get(`${API_BASE_URL}/whatsapp/qr`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

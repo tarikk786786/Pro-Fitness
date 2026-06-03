@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useGoogleLogin } from "@react-oauth/google";
+import { API_BASE_URL } from "@/lib/utils";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -24,7 +25,7 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role: "user" }),
@@ -50,7 +51,7 @@ export default function SignupPage() {
       setIsLoading(true);
       setError("");
       try {
-        const res = await fetch("http://localhost:5000/api/auth/google", {
+        const res = await fetch(`${API_BASE_URL}/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ access_token: tokenResponse.access_token }),
@@ -78,7 +79,7 @@ export default function SignupPage() {
     if (clientId === "739343033621-euv2sq9n4e37eqbheg74h2t2aab00e2a.apps.googleusercontent.com") {
       setIsLoading(true);
       setError("");
-      fetch("http://localhost:5000/api/auth/google", {
+      fetch(`${API_BASE_URL}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ access_token: "mock_token" }),
