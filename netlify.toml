@@ -6,7 +6,7 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20.9.0"
   NPM_FLAGS = "--legacy-peer-deps"
 
 # Next.js on Netlify requires the Next.js runtime plugin
