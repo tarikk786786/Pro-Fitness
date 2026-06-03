@@ -37,6 +37,15 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Health Check / Root route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'active',
+    message: 'PRO FITNESS API Service is running smoothly',
+    timestamp: new Date()
+  });
+});
+
 // Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
