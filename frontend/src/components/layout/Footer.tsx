@@ -1,125 +1,173 @@
 "use client";
 
 import Link from "next/link";
-import { Dumbbell, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import { Dumbbell, Globe, Share2, Video, ArrowUpRight, MapPin, Phone, Mail } from "lucide-react";
+
+const footerLinks = {
+  Platform: [
+    { name: "AI Tools", href: "/ai-tools" },
+    { name: "Workouts", href: "/services" },
+    { name: "Nutrition", href: "/services" },
+    { name: "Dashboard", href: "/dashboard" },
+  ],
+  Company: [
+    { name: "About", href: "/about" },
+    { name: "Trainers", href: "/trainers" },
+    { name: "Blog", href: "/blog" },
+    { name: "Events", href: "/contact" },
+  ],
+  Support: [
+    { name: "Contact", href: "/contact" },
+    { name: "Membership", href: "/membership" },
+    { name: "FAQ", href: "/contact" },
+    { name: "Privacy", href: "/contact" },
+  ],
+};
+
+const socials = [
+  { icon: Globe, href: "#", label: "Instagram" },
+  { icon: Share2, href: "#", label: "Twitter / X" },
+  { icon: Video, href: "#", label: "YouTube" },
+];
+
+const contactDetails = [
+  { icon: MapPin, text: "Balasore, Odisha — 756001" },
+  { icon: Phone, text: "+91 91144 11026" },
+  { icon: Mail, text: "profitnessindia@gmail.com" },
+];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#050505] border-t border-white/10 pt-20 pb-10">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          
-          {/* Brand */}
-          <div>
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <Dumbbell className="w-8 h-8 text-[#FFD600]" />
-              <span className="text-2xl font-black tracking-wider text-white">
+    <footer className="bg-[#050505] border-t border-white/5 relative overflow-hidden font-poppins">
+      {/* Ambient floor glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-[#FFD600]/3 blur-[130px] rounded-full pointer-events-none" />
+      {/* Left accent glow */}
+      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#FFD600]/2 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 pt-20 pb-10 relative z-10">
+        {/* ── Top grid ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+          {/* Brand column */}
+          <div className="lg:col-span-2">
+            <Link href="/" className="flex items-center gap-3 mb-6 group w-fit">
+              <div className="relative">
+                <div className="w-10 h-10 bg-[#FFD600] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,214,0,0.3)] group-hover:shadow-[0_0_40px_rgba(255,214,0,0.5)] transition-all duration-300">
+                  <Dumbbell className="w-6 h-6 text-black" />
+                </div>
+                <div className="absolute inset-0 bg-[#FFD600] rounded-xl blur-xl opacity-20 group-hover:opacity-50 transition-opacity pointer-events-none" />
+              </div>
+              <span className="font-bebas text-2xl tracking-wider">
                 PRO<span className="text-[#FFD600]">FITNESS</span>
               </span>
             </Link>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Transform Your Body. Transform Your Life. The ultimate AI-powered luxury fitness ecosystem designed for your peak performance.
+
+            <p className="text-gray-500 text-sm leading-relaxed max-w-xs mb-6">
+              The world&apos;s most advanced AI-powered fitness platform. Professional guidance, elite training, real transformation.
             </p>
-            <div className="flex items-center gap-4">
-              {/* Social icons temporarily removed due to icon library update */}
+
+            {/* Contact details */}
+            <ul className="space-y-2 mb-8">
+              {contactDetails.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-center gap-2.5 text-gray-500 text-xs">
+                  <Icon className="w-3.5 h-3.5 text-[#FFD600] flex-shrink-0" />
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Social icons */}
+            <div className="flex gap-3">
+              {socials.map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-gray-500 hover:text-[#FFD600] hover:border-[#FFD600]/30 hover:bg-[#FFD600]/5 transition-all duration-300"
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Quick Links</h4>
-            <ul className="space-y-4">
-              <FooterLink href="/about">About Us</FooterLink>
-              <FooterLink href="/membership">Membership Plans</FooterLink>
-              <FooterLink href="/trainers">Our Trainers</FooterLink>
-              <FooterLink href="/classes">Class Schedule</FooterLink>
-              <FooterLink href="/ai-tools">AI Fitness Tools</FooterLink>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Services</h4>
-            <ul className="space-y-4">
-              <FooterLink href="/services/personal-training">Personal Training</FooterLink>
-              <FooterLink href="/services/ai-nutrition">AI Nutrition Planning</FooterLink>
-              <FooterLink href="/services/group-classes">Group Classes</FooterLink>
-              <FooterLink href="/services/transformation">Body Transformation</FooterLink>
-              <FooterLink href="/services/spa">Recovery & Spa</FooterLink>
-            </ul>
-          </div>
-
-          {/* Newsletter & Contact */}
-          <div>
-            <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Join Newsletter</h4>
-            <p className="text-gray-400 mb-4 text-sm">Subscribe for fitness tips, recipes, and exclusive offers.</p>
-            <form className="flex mb-8 relative" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-5 text-sm text-white focus:outline-none focus:border-[#FF0033] transition-colors"
-              />
-              <button 
-                type="submit"
-                className="absolute right-1 top-1 bottom-1 bg-[#FFD600] hover:bg-white text-black p-2 rounded-full transition-colors flex items-center justify-center w-10 h-10"
-              >
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </form>
-            
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-gray-400 text-sm">
-                <MapPin className="w-4 h-4 text-[#FFD600]" />
-                <span>Balasore, Odisha - 756001</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400 text-sm">
-                <Phone className="w-4 h-4 text-[#FFD600]" />
-                <span>+91 91144 11026</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400 text-sm">
-                <Mail className="w-4 h-4 text-[#FFD600]" />
-                <span>profitnessindia@gmail.com</span>
-              </div>
+          {/* Link columns */}
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h4 className="text-xs font-bold tracking-[0.25em] text-[#FFD600] uppercase mb-5 font-montserrat">
+                {category}
+              </h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-gray-500 hover:text-white transition-colors duration-300 flex items-center gap-1 group"
+                    >
+                      {link.name}
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-y-0.5 group-hover:translate-y-0 transition-all duration-200" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-
+          ))}
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} PRO FITNESS. All rights reserved.
+        {/* ── Newsletter banner ── */}
+        <div className="border border-white/5 rounded-2xl p-8 mb-16 bg-white/[0.02] backdrop-blur-sm relative overflow-hidden">
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FFD600]/3 via-transparent to-transparent pointer-events-none rounded-2xl" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+            <div>
+              <h3 className="font-bebas text-2xl tracking-wide mb-1">
+                Stay in the Game
+              </h3>
+              <p className="text-gray-500 text-sm">
+                Weekly fitness tips, AI insights, and exclusive offers.
+              </p>
+            </div>
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex gap-3 w-full md:w-auto"
+            >
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className="flex-1 md:w-64 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#FFD600]/50 transition-colors"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-[#FFD600] text-black font-bold rounded-xl text-sm hover:bg-white transition-all duration-300 whitespace-nowrap shadow-[0_0_20px_rgba(255,214,0,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105"
+              >
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* ── Bottom bar ── */}
+        <div className="divider-luxury mb-8" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-600 text-xs">
+            © {new Date().getFullYear()} PRO FITNESS. All rights reserved. Built for champions.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-gray-500 text-sm hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="text-gray-500 text-sm hover:text-white transition-colors">Terms of Service</Link>
+            <Link
+              href="/contact"
+              className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/contact"
+              className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
+            >
+              Terms
+            </Link>
+            <span className="text-gray-600 text-xs">Made with 💪 in India</span>
           </div>
         </div>
       </div>
     </footer>
-  );
-}
-
-function SocialIcon({ Icon, href }: { Icon: any, href: string }) {
-  return (
-    <Link 
-      href={href} 
-      className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#FFD600] hover:text-black transition-all duration-300"
-    >
-      <Icon className="w-5 h-5" />
-    </Link>
-  );
-}
-
-function FooterLink({ href, children }: { href: string, children: React.ReactNode }) {
-  return (
-    <li>
-      <Link 
-        href={href} 
-        className="text-gray-400 hover:text-[#00D4FF] transition-colors text-sm flex items-center gap-2 group"
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-transparent group-hover:bg-[#00D4FF] transition-colors" />
-        {children}
-      </Link>
-    </li>
   );
 }

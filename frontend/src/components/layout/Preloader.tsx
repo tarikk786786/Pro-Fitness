@@ -1,87 +1,139 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import gsap from "gsap";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Dumbbell } from "lucide-react";
 
 export default function Preloader() {
-  const [isLoading, setIsLoading] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<"loading" | "done">("loading");
 
   useEffect(() => {
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setIsLoading(false);
-      }
-    });
+    // Simulate cinematic load progress with realistic acceleration curve
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setPhase("done");
+          setTimeout(() => setIsVisible(false), 800);
+          return 100;
+        }
+        // Slowdown near end for dramatic effect
+        const remaining = 100 - prev;
+        const step = remaining > 20
+          ? Math.random() * 12 + 3
+          : Math.random() * 3 + 1;
+        return Math.min(prev + step, 100);
+      });
+    }, 80);
 
-    // Animate progress
-    tl.to(progressRef.current, {
-      scaleX: 1,
-      duration: 1.5,
-      ease: "power3.inOut"
-    });
-
-    // Reveal logo & text
-    tl.to(logoRef.current, {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      ease: "power4.out"
-    }, "-=0.5");
-    
-    tl.to(textRef.current, {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      ease: "power4.out"
-    }, "-=0.6");
-
-    // Fade out and slide up entire preloader
-    tl.to(containerRef.current, {
-      yPercent: -100,
-      duration: 1,
-      ease: "power4.inOut",
-      delay: 0.5
-    });
-
-    return () => {
-      tl.kill();
-    };
+    return () => clearInterval(interval);
   }, []);
 
-  if (!isLoading) return null;
-
   return (
-    <div 
-      ref={containerRef}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-brand-black overflow-hidden"
-    >
-      {/* Luxury Gradient Mask background */}
-      <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(circle at center, rgba(255,214,0,0.3) 0%, rgba(0,0,0,0) 70%)" }} />
-
-      <div className="relative z-10 flex flex-col items-center overflow-hidden">
-        <div ref={logoRef} className="translate-y-[100px] opacity-0 mb-4">
-          <span className="text-5xl md:text-7xl font-bebas tracking-wider text-brand-white glow-white-lg">
-            PRO<span className="text-brand-yellow">FITNESS</span>
-          </span>
-        </div>
-        
-        <div className="overflow-hidden">
-          <div ref={textRef} className="translate-y-[50px] opacity-0 text-brand-yellow tracking-[0.3em] text-sm uppercase font-montserrat">
-            Billion-Dollar Startup Standard
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.7, ease: [0.43, 0.13, 0.23, 0.96] }}
+          className="fixed inset-0 z-[99999] bg-[#0A0A0A] flex flex-col items-center justify-center overflow-hidden"
+        >
+          {/* Ambient deep glow */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="w-[700px] h-[700px] bg-[#FFD600]/5 rounded-full blur-[160px]"
+            />
           </div>
-        </div>
-      </div>
 
-      <div className="absolute bottom-10 w-64 h-[1px] bg-white/10 overflow-hidden">
-        <div 
-          ref={progressRef}
-          className="w-full h-full bg-brand-yellow origin-left scale-x-0"
-        />
-      </div>
-    </div>
+          {/* Secondary radial ring */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <motion.div
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1.4, opacity: 0 }}
+              transition={{ duration: 2.5, ease: "easeOut", repeat: Infinity, repeatDelay: 1 }}
+              className="w-[300px] h-[300px] border border-[#FFD600]/10 rounded-full"
+            />
+          </div>
+
+          {/* Logo block */}
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.34, 1.56, 0.64, 1] }}
+            className="relative mb-14 flex flex-col items-center"
+          >
+            {/* Icon */}
+            <div className="relative mb-6">
+              <div className="w-20 h-20 bg-[#FFD600] rounded-3xl flex items-center justify-center shadow-[0_0_60px_rgba(255,214,0,0.5)]">
+                <Dumbbell className="w-10 h-10 text-black" />
+              </div>
+              {/* Glow blur behind icon */}
+              <div className="absolute inset-0 bg-[#FFD600] rounded-3xl blur-2xl opacity-30 -z-10" />
+            </div>
+
+            {/* Wordmark */}
+            <div className="font-bebas text-5xl tracking-widest text-center">
+              PRO<span className="text-[#FFD600]">FITNESS</span>
+            </div>
+
+            {/* Tagline */}
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-gray-500 text-center text-xs tracking-[0.4em] uppercase font-montserrat mt-3"
+            >
+              Transform Your Life
+            </motion.p>
+          </motion.div>
+
+          {/* Progress bar */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0.8 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="w-64 h-px bg-white/10 relative overflow-hidden rounded-full"
+          >
+            <motion.div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#FFD600] via-white to-[#FFD600] rounded-full"
+              animate={{ width: `${Math.min(progress, 100)}%` }}
+              transition={{ duration: 0.12, ease: "easeOut" }}
+            />
+            {/* Shimmer glide */}
+            <motion.div
+              className="absolute inset-y-0 w-12 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full"
+              animate={{ left: ["-10%", "110%"] }}
+              transition={{ duration: 1.4, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.2 }}
+            />
+          </motion.div>
+
+          {/* Status text */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-gray-600 text-xs tracking-[0.4em] uppercase font-montserrat mt-5"
+          >
+            {phase === "done" ? (
+              <motion.span
+                key="ready"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[#FFD600]/70"
+              >
+                Ready
+              </motion.span>
+            ) : (
+              <span>Loading&nbsp;·&nbsp;{Math.round(Math.min(progress, 100))}%</span>
+            )}
+          </motion.p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

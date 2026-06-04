@@ -1,36 +1,57 @@
 "use client";
 
-import { useEffect } from "react";
-import Lenis from "lenis";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+  const lenisRef = useRef<any>(null);
+
   useEffect(() => {
-    // Disable smooth scroll on low-end / reduced-motion devices
+    if (typeof window === "undefined") return;
+
+    // Respect user's reduced-motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mediaQuery.matches) return;
 
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-    });
+    const init = async () => {
+      const { default: Lenis } = await import("lenis");
 
-    let rafId: number;
+      const lenis = new Lenis({
+        duration: 1.4,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 2,
+      });
 
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
+      lenisRef.current = lenis;
 
-    rafId = requestAnimationFrame(raf);
+      // Bi-directional sync: Lenis scroll → ScrollTrigger update
+      lenis.on("scroll", ScrollTrigger.update);
+
+      // Drive Lenis via GSAP ticker for frame-perfect synchronisation
+      gsap.ticker.add((time: number) => {
+        lenis.raf(time * 1000);
+      });
+
+      // Eliminate GSAP lag smoothing so Lenis controls the pace
+      gsap.ticker.lagSmoothing(0);
+    };
+
+    init();
 
     return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+        lenisRef.current = null;
+      }
+      // Remove all GSAP ticker listeners tied to this effect
+      gsap.ticker.remove(() => {});
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
