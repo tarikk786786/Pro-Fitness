@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
 import {
-  Check, Shield, Zap, Star, CreditCard, QrCode, Smartphone,
-  Trophy, Target, Crown, ChevronRight, Dumbbell, MapPin,
-  Phone, Mail, Clock, Award, Download, Users, Sparkles
+  Check, ChevronRight, Crown, Dumbbell, Star, Smartphone, QrCode, CreditCard, Shield, Plus, Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,105 +13,205 @@ import { cn } from "@/lib/utils";
 ───────────────────────────────────────────── */
 const PLANS = [
   {
-    id: "basic",
-    tier: "BASIC",
-    tagline: "Start Your Journey",
-    price: 999,
-    displayPrice: "999",
-    description:
-      "A perfect starting point for individuals beginning their fitness journey with essential gym access and guided support.",
-    popular: false,
-    icon: Target,
-    accent: "#a3a3a3",
-    glowColor: "rgba(163,163,163,0.12)",
-    borderIdle: "border-zinc-700/60",
-    borderHover: "hover:border-zinc-500",
-    cta: "Choose Basic",
+    id: "daily",
+    tier: "DAILY PASS",
+    price: 200,
+    displayPrice: "200",
+    period: "per day",
+    description: "Perfect for visitors or quick sessions without commitment.",
     features: [
-      "Full Gym Floor Access",
-      "Beginner Workout Guidance",
-      "Group Classes (2 per month)",
+      "1-Day Gym Access",
+      "Standard Equipment",
       "Locker Room Access",
-      "Fitness Progress Tracking",
-      "Safe Training Environment",
-      "Trainer Support During Workout",
+      "Free Wi-Fi"
     ],
-  },
-  {
-    id: "pro",
-    tier: "PRO",
-    tagline: "Serious Transformation",
-    price: 1999,
-    displayPrice: "1,999",
-    description:
-      "Designed for members who want structured transformation with advanced AI coaching, unlimited classes, and full nutrition support.",
-    popular: true,
-    icon: Trophy,
-    accent: "#FFD700",
-    glowColor: "rgba(255,215,0,0.14)",
-    borderIdle: "border-[#FFD700]/70",
-    borderHover: "hover:border-[#FFD700]",
-    cta: "Choose Pro",
-    features: [
-      "Everything in Basic",
-      "Advanced AI Coach Access",
-      "Custom Diet & Nutrition Plans",
-      "Unlimited Group Classes",
-      "Monthly Body Composition Scan",
-      "Priority Trainer Assignment",
-      "Dedicated Member Dashboard",
-      "WhatsApp Fitness Reminders",
-    ],
-  },
-  {
-    id: "elite",
-    tier: "ELITE",
-    tagline: "The Ultimate Experience",
-    price: 3999,
-    displayPrice: "3,999",
-    description:
-      "The pinnacle of professional fitness. Personal trainer sessions, spa recovery, dietitian consultations, and VIP priority support.",
     popular: false,
-    icon: Crown,
-    accent: "#e2c96a",
-    glowColor: "rgba(226,201,106,0.10)",
-    borderIdle: "border-[#e2c96a]/40",
-    borderHover: "hover:border-[#e2c96a]/80",
-    cta: "Choose Elite",
-    features: [
-      "Everything in Pro",
-      "4 Personal Training Sessions / mo",
-      "Spa & Recovery Room Access",
-      "Registered Dietitian Consultation",
-      "Priority Support (24-hr response)",
-      "Quarterly Transformation Review",
-      "VIP Locker & Towel Service",
-      "Exclusive Member Events",
-    ],
+    icon: Dumbbell,
+    cta: "Get Daily Pass",
   },
+  {
+    id: "weekly",
+    tier: "WEEKLY PLAN",
+    price: 500,
+    displayPrice: "500",
+    period: "per week",
+    description: "Short-term fitness plan for consistent weekly training.",
+    features: [
+      "7-Day Gym Access",
+      "Standard Equipment",
+      "Locker Room Access",
+      "Free Wi-Fi",
+      "1 Group Class"
+    ],
+    popular: false,
+    icon: Star,
+    cta: "Get Weekly Plan",
+  },
+  {
+    id: "monthly",
+    tier: "MONTHLY PLAN",
+    price: 1000,
+    displayPrice: "1,000",
+    period: "per month",
+    description: "Our standard monthly commitment for dedicated members.",
+    features: [
+      "Full Month Access",
+      "All Equipment & Weights",
+      "Unlimited Group Classes",
+      "Fitness Assessment",
+      "Locker Room Access"
+    ],
+    popular: true,
+    icon: Crown,
+    cta: "Join Now",
+  },
+  {
+    id: "admission",
+    tier: "Admission + Monthly Advance",
+    price: 1000,
+    displayPrice: "1,000",
+    period: "registration",
+    description: "Mandatory for new members. Includes registration and first month.",
+    features: [
+      "Registration Fee Included",
+      "First Month Access",
+      "Welcome Kit",
+      "Personalized Plan",
+      "Diet Consultation"
+    ],
+    popular: false,
+    icon: Check,
+    cta: "Start Your Journey",
+  }
+];
+
+const FAQS = [
+  {
+    question: "Do I have to pay an admission fee?",
+    answer: "Yes, new members must choose the 'Admission + Monthly Advance' plan which covers your one-time registration and your first month of training."
+  },
+  {
+    question: "Is personal training included in the monthly plan?",
+    answer: "The monthly plan includes a basic fitness assessment. One-on-one personal training is available for an additional premium fee."
+  },
+  {
+    question: "Can I upgrade from a daily or weekly pass to a monthly plan?",
+    answer: "Absolutely! Just pay the admission fee and the monthly plan amount when you're ready to commit to your transformation."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept UPI (GPay, PhonePe, Paytm), Cards via Razorpay, QR Code at the reception, and Cash."
+  }
 ];
 
 const PAYMENT_METHODS = [
-  { icon: Smartphone, label: "UPI Payment",     desc: "PhonePe, GPay, Paytm",      type: "upi"  },
-  { icon: QrCode,     label: "QR Code",          desc: "Scan at reception",          type: "qr"   },
-  { icon: CreditCard, label: "Razorpay",          desc: "Cards, wallets & netbanking",type: "razorpay" },
-  { icon: Shield,     label: "Cash",              desc: "Pay at reception",           type: "cash" },
-];
-
-const BRAND_MESSAGES = [
-  { icon: "🔥", text: "Consistency builds transformation." },
-  { icon: "🧠", text: "Train smart, train safely." },
-  { icon: "🏋️", text: "Professional guidance for every member." },
-  { icon: "🚀", text: "Your fitness journey starts here." },
+  { icon: Smartphone, label: "UPI Payment", desc: "PhonePe, GPay, Paytm", type: "upi" },
+  { icon: QrCode, label: "QR Code", desc: "Scan at reception", type: "qr" },
+  { icon: CreditCard, label: "Razorpay", desc: "Cards, wallets & netbanking", type: "razorpay" },
+  { icon: Shield, label: "Cash", desc: "Pay at reception", type: "cash" },
 ];
 
 /* ─────────────────────────────────────────────
-   COMPONENT
+   MAGNETIC BUTTON
+───────────────────────────────────────────── */
+function MagneticButton({ children, className, onClick, disabled }: any) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!button) return;
+    
+    const xTo = gsap.quickTo(button, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
+    const yTo = gsap.quickTo(button, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = button.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width / 2) * 0.2;
+      const y = (e.clientY - rect.top - rect.height / 2) * 0.2;
+      xTo(x);
+      yTo(y);
+    };
+
+    const handleMouseLeave = () => {
+      xTo(0);
+      yTo(0);
+    };
+
+    button.addEventListener("mousemove", handleMouseMove);
+    button.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      button.removeEventListener("mousemove", handleMouseMove);
+      button.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
+  return (
+    <button ref={buttonRef} className={className} onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   ACCORDION ITEM
+───────────────────────────────────────────── */
+function FAQItem({ faq, isOpen, onClick }: { faq: typeof FAQS[0], isOpen: boolean, onClick: () => void }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      gsap.to(contentRef.current, { height: "auto", duration: 0.4, ease: "power3.out" });
+    } else {
+      gsap.to(contentRef.current, { height: 0, duration: 0.4, ease: "power3.inOut" });
+    }
+  }, [isOpen]);
+
+  return (
+    <div className="border-b border-zinc-800">
+      <button
+        onClick={onClick}
+        className="w-full flex items-center justify-between py-6 text-left group"
+      >
+        <span className="text-lg font-medium text-zinc-200 group-hover:text-[#FFD600] transition-colors">
+          {faq.question}
+        </span>
+        <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
+          <motion.div animate={{ rotate: isOpen ? 135 : 0 }} transition={{ duration: 0.3, ease: "easeInOut" }}>
+            <Plus className={cn("w-5 h-5 text-zinc-400 group-hover:text-[#FFD600] transition-colors", isOpen && "text-[#FFD600]")} />
+          </motion.div>
+        </div>
+      </button>
+      <div ref={contentRef} className="h-0 overflow-hidden">
+        <div className="pb-6 text-zinc-400 leading-relaxed">
+          {faq.answer}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   MAIN COMPONENT
 ───────────────────────────────────────────── */
 export default function MembershipPage() {
-  const [loadingId, setLoadingId]     = useState<string | null>(null);
-  const [modal, setModal]             = useState<typeof PLANS[0] | null>(null);
-  const [payMethod, setPayMethod]     = useState<string | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [modal, setModal] = useState<typeof PLANS[0] | null>(null);
+  const [payMethod, setPayMethod] = useState<string | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Cinematic entrance
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".cinematic-text", 
+        { y: 50, opacity: 0, filter: "blur(10px)" }, 
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2, stagger: 0.2, ease: "power4.out" }
+      );
+    }, heroRef);
+    return () => ctx.revert();
+  }, []);
 
   /* Razorpay handler */
   const openRazorpay = async (plan: typeof PLANS[0]) => {
@@ -134,7 +233,7 @@ export default function MembershipPage() {
         alert(`✅ Payment Successful!\nID: ${r.razorpay_payment_id}\n\nWelcome to PRO FITNESS!`);
         setLoadingId(null); setModal(null); setPayMethod(null);
       },
-      theme: { color: "#FFD700" },
+      theme: { color: "#FFD600" },
     };
     const rz = new (window as any).Razorpay(options);
     rz.on("payment.failed", () => { alert("Payment failed."); setLoadingId(null); });
@@ -154,321 +253,162 @@ export default function MembershipPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070707] text-white overflow-x-hidden">
-
-      {/* ══════════════════════════════════════
-          HERO / HEADER
-      ══════════════════════════════════════ */}
-      <section className="relative pt-36 pb-28 text-center overflow-hidden">
-        {/* Ambient light blobs */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#FFD700]/7 rounded-full blur-[130px]" />
-          <div className="absolute top-60 left-0 w-[400px] h-[400px] bg-[#FFD700]/4 rounded-full blur-[100px]" />
-          <div className="absolute top-60 right-0 w-[400px] h-[400px] bg-[#FFD700]/4 rounded-full blur-[100px]" />
-          {/* Grid lines */}
-          <div className="absolute inset-0 opacity-[0.03]"
-            style={{ backgroundImage: "linear-gradient(#FFD700 1px,transparent 1px),linear-gradient(90deg,#FFD700 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
+    <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#FFD600] selection:text-black">
+      
+      {/* ─────────────────────────────────────────────
+          HERO
+      ───────────────────────────────────────────── */}
+      <section ref={heroRef} className="relative pt-40 pb-20 overflow-hidden flex flex-col items-center text-center px-4">
+        {/* Soft Ambient Background Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#FFD600]/5 rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="cinematic-text mb-6">
+          <div className="inline-flex items-center gap-2 bg-[#FFD600]/10 border border-[#FFD600]/20 rounded-full px-5 py-2">
+            <Crown className="w-4 h-4 text-[#FFD600]" />
+            <span className="text-[#FFD600] text-xs font-black uppercase tracking-[0.2em]">Elevate Your Limits</span>
+          </div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4">
-          {/* Pill badge */}
-          <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-full px-5 py-2 mb-8">
-            <Sparkles className="w-4 h-4 text-[#FFD700]" />
-            <span className="text-[#FFD700] text-xs font-black uppercase tracking-[0.2em]">PRO FITNESS · Balasore</span>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none mb-6">
-            Premium
-            <br />
-            <span className="text-[#FFD700] relative">
-              Membership Tiers
-              <svg className="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 400 6" fill="none">
-                <path d="M0 3 Q200 0 400 3" stroke="#FFD700" strokeWidth="2" strokeOpacity="0.5"/>
-              </svg>
-            </span>
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.16 }}
-            className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Choose the membership plan that matches your fitness goals, training style, and commitment level.
-            Flexible access, professional guidance, and a disciplined fitness environment designed for real transformation.
-          </motion.p>
-        </div>
+        <h1 className="cinematic-text text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none mb-6 text-white drop-shadow-2xl">
+          CHOOSE YOUR <br/>
+          <span className="text-[#FFD600]">MEMBERSHIP</span>
+        </h1>
+        
+        <p className="cinematic-text text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          Premium fitness programs designed to transform your lifestyle. 
+          Experience unmatched equipment, professional guidance, and an elite community.
+        </p>
       </section>
 
-      {/* ══════════════════════════════════════
-          PRICING CARDS
-      ══════════════════════════════════════ */}
-      <section className="container mx-auto px-4 pb-28">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+      {/* ─────────────────────────────────────────────
+          PRICING GRID
+      ───────────────────────────────────────────── */}
+      <section className="container mx-auto px-4 pb-24 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 max-w-7xl mx-auto items-stretch">
           {PLANS.map((plan, i) => {
             const Icon = plan.icon;
             return (
-              <motion.div key={plan.id}
+              <motion.div
+                key={plan.id}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={cn(
-                  "relative flex flex-col rounded-3xl border transition-all duration-500 overflow-hidden group",
-                  "bg-gradient-to-b from-[#111111] to-[#0a0a0a]",
-                  plan.borderIdle, plan.borderHover,
-                  plan.popular
-                    ? "md:-translate-y-5 shadow-[0_0_80px_rgba(255,215,0,0.14)]"
-                    : "hover:-translate-y-2 hover:shadow-[0_24px_64px_rgba(0,0,0,0.5)]"
+                  "relative flex flex-col p-8 rounded-3xl bg-[#111111] border transition-all duration-500 overflow-hidden group",
+                  plan.popular 
+                    ? "border-[#FFD600]/40 shadow-[0_0_50px_rgba(255,214,0,0.1)] lg:-translate-y-4" 
+                    : "border-zinc-800 hover:border-zinc-600 hover:bg-[#161616]"
                 )}
-                style={{ boxShadow: plan.popular ? `0 0 80px ${plan.glowColor}` : undefined }}
+                style={{
+                  boxShadow: plan.popular ? "0 0 50px rgba(255, 214, 0, 0.1)" : undefined
+                }}
               >
-                {/* Top accent line */}
-                <div className="h-[3px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${plan.accent}, transparent)` }} />
+                {/* Hover Soft Glow for non-popular */}
+                {!plan.popular && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                )}
 
-                {/* Popular badge */}
+                {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 z-20">
-                    <div className="flex items-center gap-1.5 bg-[#FFD700] text-black text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.18em] shadow-xl whitespace-nowrap">
-                      <Star className="w-3 h-3 fill-black" /> Most Popular
+                  <div className="absolute top-0 inset-x-0 flex justify-center">
+                    <div className="bg-[#FFD600] text-black text-[10px] font-black px-4 py-1.5 rounded-b-xl uppercase tracking-[0.2em] shadow-lg">
+                      Most Popular
                     </div>
                   </div>
                 )}
 
-                <div className="p-8 flex flex-col flex-1">
-                  {/* Tier icon + name */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <div className="flex items-center gap-2.5 mb-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                          style={{ background: `${plan.accent}18` }}>
-                          <Icon className="w-5 h-5" style={{ color: plan.accent }} />
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-black uppercase tracking-[0.2em]"
-                            style={{ color: plan.accent }}>{plan.tagline}</div>
-                        </div>
-                      </div>
-                      <h3 className="text-3xl font-black uppercase tracking-tight text-white">{plan.tier}</h3>
-                    </div>
+                {/* Header */}
+                <div className={cn("flex items-center gap-3 mb-6", plan.popular && "mt-4")}>
+                  <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", 
+                    plan.popular ? "bg-[#FFD600]/20 text-[#FFD600]" : "bg-zinc-800 text-zinc-400 group-hover:text-white transition-colors"
+                  )}>
+                    <Icon className="w-6 h-6" />
                   </div>
-
-                  {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl font-bold" style={{ color: plan.accent }}>₹</span>
-                      <span className="text-6xl font-black text-white leading-none">{plan.displayPrice}</span>
-                    </div>
-                    <div className="text-zinc-500 text-sm font-medium">per month</div>
-                    <div className="w-10 h-[3px] rounded-full mt-4" style={{ background: plan.accent }} />
+                  <div>
+                    <h3 className="font-black text-xl uppercase tracking-wider text-white">{plan.tier}</h3>
                   </div>
-
-                  {/* Description */}
-                  <p className="text-zinc-400 text-sm leading-relaxed mb-8 min-h-[60px]">
-                    {plan.description}
-                  </p>
-
-                  {/* Features */}
-                  <ul className="space-y-3 mb-10 flex-1">
-                    {plan.features.map((f, j) => (
-                      <motion.li key={j}
-                        initial={{ opacity: 0, x: -8 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.05 * j + 0.2 }}
-                        className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-                          style={{ background: `${plan.accent}20` }}>
-                          <Check className="w-3 h-3" style={{ color: plan.accent }} />
-                        </div>
-                        <span className="text-zinc-300 text-sm font-medium leading-snug group-hover:text-zinc-200 transition-colors">
-                          {f}
-                        </span>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <button
-                    onClick={() => { setModal(plan); setPayMethod(null); }}
-                    className={cn(
-                      "relative w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all duration-300 overflow-hidden group/btn",
-                      plan.popular
-                        ? "bg-[#FFD700] text-black shadow-[0_0_30px_rgba(255,215,0,0.25)] hover:bg-white hover:shadow-[0_0_50px_rgba(255,215,0,0.4)]"
-                        : "bg-zinc-800/80 text-white border border-zinc-700 hover:border-transparent"
-                    )}
-                    style={!plan.popular ? { "--hover-bg": plan.accent } as any : {}}
-                    onMouseEnter={(e) => { if (!plan.popular) { (e.currentTarget as any).style.background = plan.accent; (e.currentTarget as any).style.color = "#000"; } }}
-                    onMouseLeave={(e) => { if (!plan.popular) { (e.currentTarget as any).style.background = ""; (e.currentTarget as any).style.color = ""; } }}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      {plan.cta}
-                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </span>
-                  </button>
                 </div>
+
+                {/* Price */}
+                <div className="mb-4 flex items-baseline gap-1">
+                  <span className={cn("text-2xl font-bold", plan.popular ? "text-[#FFD600]" : "text-zinc-500")}>₹</span>
+                  <span className="text-5xl font-black text-white">{plan.displayPrice}</span>
+                </div>
+                <div className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-6">
+                  {plan.period}
+                </div>
+
+                <p className="text-zinc-400 text-sm leading-relaxed mb-8 h-12">
+                  {plan.description}
+                </p>
+
+                {/* Features */}
+                <ul className="space-y-4 mb-10 flex-1">
+                  {plan.features.map((feature, j) => (
+                    <li key={j} className="flex items-start gap-3">
+                      <div className={cn("mt-1 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0", 
+                        plan.popular ? "bg-[#FFD600]/20" : "bg-zinc-800"
+                      )}>
+                        <Check className={cn("w-2.5 h-2.5", plan.popular ? "text-[#FFD600]" : "text-zinc-400")} />
+                      </div>
+                      <span className="text-zinc-300 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <MagneticButton
+                  onClick={() => { setModal(plan); setPayMethod(null); }}
+                  className={cn(
+                    "w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all duration-300 flex items-center justify-center gap-2",
+                    plan.popular
+                      ? "bg-[#FFD600] text-black shadow-[0_0_20px_rgba(255,214,0,0.3)] hover:bg-white hover:shadow-[0_0_30px_rgba(255,214,0,0.5)]"
+                      : "bg-zinc-800 text-white hover:bg-zinc-700"
+                  )}
+                >
+                  {plan.cta}
+                  <ChevronRight className="w-4 h-4" />
+                </MagneticButton>
               </motion.div>
             );
           })}
         </div>
-
-        {/* Admission info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto mt-12"
-        >
-          <div className="flex items-center justify-center gap-3 bg-[#111] border border-[#FFD700]/20 rounded-2xl px-8 py-5">
-            <Award className="w-5 h-5 text-[#FFD700] flex-shrink-0" />
-            <p className="text-zinc-400 text-sm text-center leading-relaxed">
-              <span className="text-[#FFD700] font-bold">Admission ₹1,000 + Monthly Advance ₹1,000</span>
-              {" "}— Required for monthly membership activation.
-            </p>
-          </div>
-        </motion.div>
       </section>
 
-      {/* ══════════════════════════════════════
-          BRAND MESSAGES
-      ══════════════════════════════════════ */}
-      <section className="border-y border-zinc-900 bg-[#050505] py-14 mb-0">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {BRAND_MESSAGES.map((msg, i) => (
-              <motion.div key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="text-center px-4 py-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 hover:border-[#FFD700]/25 transition-colors">
-                <div className="text-3xl mb-3">{msg.icon}</div>
-                <p className="text-zinc-300 text-sm font-medium italic leading-relaxed">&ldquo;{msg.text}&rdquo;</p>
-              </motion.div>
+      {/* ─────────────────────────────────────────────
+          FAQ SECTION
+      ───────────────────────────────────────────── */}
+      <section className="bg-[#050505] py-24 border-t border-zinc-900">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-white">
+              Frequent <span className="text-[#FFD600]">Questions</span>
+            </h2>
+            <p className="text-zinc-400 text-lg">Everything you need to know about memberships.</p>
+          </motion.div>
+
+          <div className="space-y-2">
+            {FAQS.map((faq, index) => (
+              <FAQItem 
+                key={index} 
+                faq={faq} 
+                isOpen={openFaqIndex === index} 
+                onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)} 
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          GYM TIMINGS + PAYMENT + CONTACT
-      ══════════════════════════════════════ */}
-      <section className="container mx-auto px-4 py-24">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-
-          {/* Timings */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-[#111] border border-zinc-800 rounded-3xl p-8"
-          >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-[#FFD700]/15 rounded-xl flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[#FFD700]" />
-              </div>
-              <h2 className="font-black text-xl uppercase tracking-wider">Gym Timings</h2>
-            </div>
-            <div className="space-y-4">
-              {[
-                { emoji: "🌅", label: "Morning", time: "6:00 AM – 10:00 AM", days: "Monday – Saturday", color: "text-amber-400" },
-                { emoji: "🌆", label: "Evening", time: "4:00 PM – 10:00 PM", days: "Monday – Saturday", color: "text-orange-400" },
-                { emoji: "🔒", label: "Sunday",  time: "CLOSED",              days: "Rest & Recovery",   color: "text-zinc-500" },
-              ].map((slot, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800">
-                  <span className="text-2xl">{slot.emoji}</span>
-                  <div className="flex-1">
-                    <div className={cn("font-black text-sm uppercase tracking-wider", slot.color)}>{slot.label}</div>
-                    <div className="text-zinc-500 text-xs mt-0.5">{slot.days}</div>
-                  </div>
-                  <div className={cn("font-bold text-sm text-right", slot.color)}>{slot.time}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Payment icons */}
-            <div className="mt-8 pt-8 border-t border-zinc-800">
-              <p className="text-zinc-500 text-xs uppercase tracking-widest font-bold mb-4">We Accept</p>
-              <div className="grid grid-cols-2 gap-3">
-                {PAYMENT_METHODS.map((m, i) => {
-                  const Icon = m.icon;
-                  return (
-                    <div key={i} className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
-                      <Icon className="w-4 h-4 text-[#FFD700]" />
-                      <div>
-                        <div className="text-white text-xs font-bold">{m.label}</div>
-                        <div className="text-zinc-600 text-[10px]">{m.desc}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                {["Receipt Provided", "Invoice Generation", "Membership Activation", "Renewal Reminders"].map((f, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <Check className="w-3 h-3 text-[#FFD700] flex-shrink-0" />
-                    <span className="text-zinc-500 text-[11px]">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Contact */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-[#111] border border-zinc-800 rounded-3xl p-8 flex flex-col"
-          >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-[#FFD700]/15 rounded-xl flex items-center justify-center">
-                <Dumbbell className="w-5 h-5 text-[#FFD700]" />
-              </div>
-              <div>
-                <h2 className="font-black text-xl uppercase tracking-wider">PRO FITNESS</h2>
-                <p className="text-zinc-500 text-xs">Balasore, Odisha</p>
-              </div>
-            </div>
-
-            <div className="space-y-5 mb-8 flex-1">
-              {[
-                { icon: MapPin, label: "Address", value: "Balasore, Odisha – 756001" },
-                { icon: Phone,  label: "Phone",   value: "+91 91144 11026" },
-                { icon: Mail,   label: "Email",   value: "profitnessindia@gmail.com" },
-                { icon: Users,  label: "Community", value: "500+ Active Members" },
-              ].map(({ icon: Icon, label, value }, i) => (
-                <div key={i} className="flex items-start gap-4">
-                  <div className="w-9 h-9 bg-zinc-800 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-[#FFD700]" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">{label}</div>
-                    <div className="text-zinc-200 text-sm font-medium">{value}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-3 mt-auto">
-              <a href="tel:+919114411026"
-                className="flex items-center justify-center gap-2 w-full py-4 bg-[#FFD700] text-black font-black rounded-2xl hover:bg-white transition-all uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(255,215,0,0.2)]">
-                <Phone className="w-4 h-4" /> Call Us Now
-              </a>
-              <a href="https://wa.me/919114411026?text=Hi%2C%20I%20want%20to%20know%20more%20about%20PRO%20FITNESS%20membership"
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-4 bg-green-600 hover:bg-green-500 text-white font-black rounded-2xl transition-all uppercase tracking-widest text-sm">
-                💬 WhatsApp Us
-              </a>
-              <p className="text-center text-zinc-600 text-xs pt-2">
-                Walk in with ID proof — we&apos;ll get you started immediately.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
+      {/* ─────────────────────────────────────────────
           PAYMENT MODAL
-      ══════════════════════════════════════ */}
+      ───────────────────────────────────────────── */}
       <AnimatePresence>
         {modal && (
           <motion.div
@@ -476,97 +416,94 @@ export default function MembershipPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={(e) => { if (e.target === e.currentTarget) { setModal(null); setPayMethod(null); } }}
-            className="fixed inset-0 z-[300] bg-black/88 backdrop-blur-lg flex items-center justify-center px-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center px-4"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 24 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 24 }}
-              transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              className="w-full max-w-md bg-[#111] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-full max-w-md bg-[#111111] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
             >
-              {/* Modal header */}
-              <div className="relative bg-gradient-to-br from-[#1a1400] to-[#0d0d0d] border-b border-zinc-800 p-7">
-                <div className="absolute inset-0 bg-[#FFD700]/4 pointer-events-none" />
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="text-[#FFD700] text-[10px] font-black uppercase tracking-[0.2em] mb-1">
-                      PRO FITNESS MEMBERSHIP
-                    </div>
-                    <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-2">{modal.tier}</h3>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-[#FFD700] text-lg font-bold">₹</span>
-                      <span className="text-4xl font-black text-white">{modal.displayPrice}</span>
-                      <span className="text-zinc-500 text-sm">/mo</span>
-                    </div>
+              <div className="p-6 border-b border-zinc-800 bg-gradient-to-b from-[#1a1810] to-[#111111]">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="text-[#FFD600] text-xs font-black uppercase tracking-[0.2em]">
+                    Checkout
                   </div>
-                  <button
+                  <button 
                     onClick={() => { setModal(null); setPayMethod(null); }}
-                    className="w-9 h-9 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition-colors text-sm"
-                  >✕</button>
+                    className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-2">{modal.tier}</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[#FFD600] text-xl font-bold">₹</span>
+                  <span className="text-5xl font-black text-white">{modal.displayPrice}</span>
                 </div>
               </div>
 
-              {/* Methods */}
-              <div className="p-7 space-y-3">
-                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.18em] mb-4">
+              <div className="p-6">
+                <p className="text-zinc-500 text-xs font-black uppercase tracking-[0.15em] mb-4">
                   Select Payment Method
                 </p>
-                {PAYMENT_METHODS.map((method) => {
-                  const Icon = method.icon;
-                  const isSelected = payMethod === method.type;
-                  return (
-                    <button key={method.type}
-                      onClick={() => setPayMethod(method.type)}
-                      className={cn(
-                        "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left",
-                        isSelected
-                          ? "border-[#FFD700] bg-[#FFD700]/10"
-                          : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-600"
-                      )}
-                    >
-                      <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
-                        isSelected ? "bg-[#FFD700]/20" : "bg-zinc-800"
-                      )}>
-                        <Icon className={cn("w-5 h-5", isSelected ? "text-[#FFD700]" : "text-zinc-400")} />
-                      </div>
-                      <div className="flex-1">
-                        <div className={cn("font-bold text-sm", isSelected ? "text-white" : "text-zinc-300")}>
-                          {method.label}
+                <div className="space-y-3 mb-6">
+                  {PAYMENT_METHODS.map((method) => {
+                    const Icon = method.icon;
+                    const isSelected = payMethod === method.type;
+                    return (
+                      <button key={method.type}
+                        onClick={() => setPayMethod(method.type)}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left",
+                          isSelected
+                            ? "border-[#FFD600] bg-[#FFD600]/10"
+                            : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-800"
+                        )}
+                      >
+                        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0", 
+                          isSelected ? "bg-[#FFD600]/20" : "bg-zinc-800"
+                        )}>
+                          <Icon className={cn("w-5 h-5", isSelected ? "text-[#FFD600]" : "text-zinc-400")} />
                         </div>
-                        <div className="text-zinc-500 text-xs">{method.desc}</div>
-                      </div>
-                      {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[#FFD700] flex items-center justify-center">
-                          <Check className="w-3 h-3 text-black" />
+                        <div className="flex-1">
+                          <div className={cn("font-bold text-sm", isSelected ? "text-white" : "text-zinc-300")}>
+                            {method.label}
+                          </div>
+                          <div className="text-zinc-500 text-xs">{method.desc}</div>
                         </div>
-                      )}
-                    </button>
-                  );
-                })}
+                        {isSelected && (
+                          <div className="w-5 h-5 rounded-full bg-[#FFD600] flex items-center justify-center">
+                            <Check className="w-3 h-3 text-black" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                <button
+                <MagneticButton
                   disabled={!payMethod || loadingId === modal.id}
                   onClick={() => handlePay(modal)}
-                  className="w-full mt-3 py-4 bg-[#FFD700] text-black font-black uppercase tracking-widest rounded-2xl hover:bg-white transition-all disabled:opacity-35 disabled:cursor-not-allowed text-sm shadow-[0_0_20px_rgba(255,215,0,0.2)]"
+                  className="w-full py-4 bg-[#FFD600] text-black font-black uppercase tracking-widest rounded-xl hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center shadow-[0_0_20px_rgba(255,214,0,0.2)]"
                 >
                   {loadingId === modal.id
                     ? "Processing..."
                     : payMethod
                     ? `Pay ₹${modal.displayPrice}`
-                    : "Select a Payment Method"}
-                </button>
-
-                <div className="flex items-center justify-center gap-4 pt-2">
+                    : "Select Method"}
+                </MagneticButton>
+                
+                <div className="flex items-center justify-center gap-4 mt-4 opacity-70">
                   <div className="flex items-center gap-1.5">
-                    <Shield className="w-3 h-3 text-zinc-600" />
-                    <span className="text-zinc-600 text-[11px]">Encrypted & Secure</span>
+                    <Shield className="w-3 h-3 text-zinc-500" />
+                    <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider">Secure</span>
                   </div>
-                  <div className="w-px h-3 bg-zinc-800" />
+                  <div className="w-1 h-1 rounded-full bg-zinc-700" />
                   <div className="flex items-center gap-1.5">
-                    <Download className="w-3 h-3 text-zinc-600" />
-                    <span className="text-zinc-600 text-[11px]">Receipt Provided</span>
+                    <Download className="w-3 h-3 text-zinc-500" />
+                    <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider">Receipt</span>
                   </div>
                 </div>
               </div>

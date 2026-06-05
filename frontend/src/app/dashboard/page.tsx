@@ -1,8 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Flame, Droplets, Trophy, Activity, Dumbbell, Apple, ArrowRight, Brain } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
+import { useEffect, useRef } from "react";
+import { motion, Variants } from "framer-motion";
+import gsap from "gsap";
+import { Flame, Droplets, Trophy, Activity, Dumbbell, ArrowRight, Brain, Clock, ChevronRight } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from "recharts";
 import Link from "next/link";
 
 const weeklyData = [
@@ -22,143 +24,206 @@ const weightData = [
   { date: 'Week 4', weight: 79.8 },
 ];
 
+const timetable = [
+  { time: "07:00 AM", task: "Morning Run", type: "cardio" },
+  { time: "09:30 AM", task: "Protein Breakfast", type: "diet" },
+  { time: "02:00 PM", task: "Hydration Check", type: "habit" },
+  { time: "06:00 PM", task: "Upper Body Power", type: "workout", active: true },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } }
+};
+
 export default function DashboardOverview() {
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      gsap.fromTo(headerRef.current, 
+        { opacity: 0, y: -30 }, 
+        { opacity: 1, y: 0, duration: 1, ease: "power4.out" }
+      );
+    }
+  }, []);
+
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
-      {/* Welcome */}
-      <div className="flex justify-between items-end">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-black mb-1">Welcome back, John! 🔥</h1>
-          <p className="text-gray-400">Here's your fitness summary for today.</p>
-        </motion.div>
+    <motion.div 
+      className="space-y-8 max-w-[1400px] mx-auto pb-12"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Welcome Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6" ref={headerRef}>
+        <div>
+          <h1 className="text-4xl font-black tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+            Welcome back, Elite.
+          </h1>
+          <p className="text-gray-400 font-medium">Your physiological data is synced and ready.</p>
+        </div>
         
-        <Link href="/dashboard/workouts" className="hidden sm:flex items-center gap-2 bg-[#FF0033] px-5 py-2.5 rounded-full font-bold hover:bg-white hover:text-black transition-colors text-sm">
-          Start Workout <ArrowRight className="w-4 h-4" />
+        <Link href="/dashboard/workouts" className="group flex items-center gap-2 bg-[#FFD600] text-black px-6 py-3 rounded-full font-black hover:bg-white transition-all shadow-[0_0_20px_rgba(255,214,0,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+          Launch Session <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      {/* Stats Grid */}
+      {/* KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
-          { icon: Flame, label: "Calories Burned", value: "2,450", unit: "kcal", color: "text-[#FF0033]", bg: "bg-[#FF0033]/10" },
-          { icon: Dumbbell, label: "Workouts", value: "4", unit: "/ week", color: "text-[#00D4FF]", bg: "bg-[#00D4FF]/10" },
-          { icon: Trophy, label: "Current Streak", value: "12", unit: "days", color: "text-[#FFB800]", bg: "bg-[#FFB800]/10" },
-          { icon: Droplets, label: "Water Intake", value: "2.5", unit: "/ 3.5L", color: "text-blue-500", bg: "bg-blue-500/10" },
+          { icon: Flame, label: "Active Energy", value: "2,450", unit: "kcal", progress: 75, color: "#FFD600" },
+          { icon: Dumbbell, label: "Volume Load", value: "14.2", unit: "tons", progress: 60, color: "#fff" },
+          { icon: Trophy, label: "Discipline", value: "12", unit: "day streak", progress: 100, color: "#FFD600" },
+          { icon: Droplets, label: "Hydration", value: "2.5", unit: "L / 3.5L", progress: 70, color: "#00D4FF" },
         ].map((stat, i) => (
           <motion.div 
             key={i}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.1 }}
-            className="bg-white/5 border border-white/10 rounded-[24px] p-6 flex flex-col justify-between"
+            variants={itemVariants}
+            className="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 overflow-hidden group hover:bg-white/10 transition-colors"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg}`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
-              </div>
-              <span className="text-gray-400 font-medium text-sm">{stat.label}</span>
+            {/* Progress Bar Background */}
+            <div className="absolute bottom-0 left-0 h-1.5 bg-white/5 w-full">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${stat.progress}%` }}
+                transition={{ duration: 1.5, delay: i * 0.2, ease: "easeOut" }}
+                className="h-full rounded-r-full shadow-[0_0_10px_currentColor]"
+                style={{ backgroundColor: stat.color, color: stat.color }}
+              />
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-black">{stat.value}</span>
-              <span className="text-gray-500 text-sm font-medium">{stat.unit}</span>
+
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-black/50 flex items-center justify-center border border-white/5 group-hover:border-white/20 transition-colors">
+                  <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-gray-400 font-medium text-sm tracking-wide uppercase">{stat.label}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-black tracking-tight">{stat.value}</span>
+                <span className="text-gray-500 font-bold text-sm">{stat.unit}</span>
+              </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Charts Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white/5 border border-white/10 rounded-[32px] p-6 sm:p-8"
-          >
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-[#00D4FF]" /> Activity Overview
-            </h3>
-            <div className="h-64 w-full">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        {/* Main Charts Area */}
+        <div className="xl:col-span-2 space-y-6">
+          
+          <motion.div variants={itemVariants} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 sm:p-8">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-xl font-black tracking-tight flex items-center gap-3">
+                <div className="w-2 h-8 bg-[#FFD600] rounded-full shadow-[0_0_10px_rgba(255,214,0,0.5)]"></div>
+                Metabolic Output
+              </h3>
+              <select className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-gray-300 outline-none">
+                <option>This Week</option>
+                <option>Last Week</option>
+              </select>
+            </div>
+            <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weeklyData}>
-                  <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                  <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} dy={10} />
                   <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip cursor={{ fill: '#ffffff0a' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }} />
-                  <Bar dataKey="calories" fill="#00D4FF" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Tooltip 
+                    cursor={{ fill: '#ffffff05' }} 
+                    contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #333', borderRadius: '16px', color: '#fff', fontWeight: 'bold' }} 
+                  />
+                  <Bar dataKey="calories" fill="#FFD600" radius={[6, 6, 0, 0]} barSize={40}>
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white/5 border border-white/10 rounded-[32px] p-6 sm:p-8"
-          >
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-[#FFB800]" /> Weight Progress
+          <motion.div variants={itemVariants} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 sm:p-8">
+            <h3 className="text-xl font-black tracking-tight flex items-center gap-3 mb-8">
+              <div className="w-2 h-8 bg-white rounded-full"></div>
+              Body Composition Trend
             </h3>
-            <div className="h-64 w-full">
+            <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={weightData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                  <XAxis dataKey="date" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 2', 'dataMax + 2']} />
-                  <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }} />
-                  <Line type="monotone" dataKey="weight" stroke="#FF0033" strokeWidth={3} dot={{ fill: '#FF0033', r: 4 }} activeDot={{ r: 6 }} />
-                </LineChart>
+                <AreaChart data={weightData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                  <XAxis dataKey="date" stroke="#888" fontSize={12} tickLine={false} axisLine={false} dy={10} />
+                  <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 1', 'dataMax + 1']} />
+                  <Tooltip contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #333', borderRadius: '16px', fontWeight: 'bold' }} />
+                  <Area type="monotone" dataKey="weight" stroke="#ffffff" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" activeDot={{ r: 8, fill: '#FFD600', stroke: '#000', strokeWidth: 4 }} />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
         </div>
 
-        {/* Right Sidebar Area */}
+        {/* Side Panel Area */}
         <div className="space-y-6">
-          {/* Today's Workout */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-gradient-to-br from-[#FF0033]/20 to-black border border-[#FF0033]/30 rounded-[32px] p-6"
-          >
-            <div className="bg-[#FF0033] text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TODAY</div>
-            <h3 className="text-2xl font-black mb-2">Upper Body Power</h3>
-            <p className="text-gray-400 text-sm mb-6">45 mins • 6 exercises • 400 kcal</p>
+          
+          {/* Daily Protocol */}
+          <motion.div variants={itemVariants} className="bg-gradient-to-b from-[#1a1a1a] to-black border border-white/10 rounded-[32px] p-6 sm:p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD600]/10 rounded-full blur-[50px]"></div>
             
-            <div className="space-y-3 mb-6">
-              {['Bench Press', 'Incline Dumbbell Press', 'Lat Pulldowns'].map((ex, i) => (
-                <div key={i} className="flex justify-between items-center text-sm border-b border-white/10 pb-2">
-                  <span>{ex}</span>
-                  <span className="text-gray-400">4x10</span>
+            <h3 className="text-xl font-black mb-6 tracking-tight">Daily Protocol</h3>
+            
+            <div className="relative border-l-2 border-white/10 pl-6 ml-3 space-y-8">
+              {timetable.map((item, i) => (
+                <div key={i} className="relative">
+                  <div className={`absolute -left-[35px] top-1 w-4 h-4 rounded-full border-4 border-black ${item.active ? 'bg-[#FFD600] shadow-[0_0_10px_#FFD600]' : 'bg-gray-600'}`} />
+                  <p className="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1"><Clock className="w-3 h-3" /> {item.time}</p>
+                  <p className={`font-bold ${item.active ? 'text-white text-lg' : 'text-gray-400'}`}>{item.task}</p>
+                  {item.active && (
+                    <Link href="/dashboard/workouts" className="mt-3 inline-flex items-center gap-1 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors">
+                      Execute <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
-            
-            <button className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-[#00D4FF] transition-colors">
-              Start Session
-            </button>
           </motion.div>
 
-          {/* AI Recommendation */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white/5 border border-white/10 rounded-[32px] p-6"
-          >
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Brain className="w-5 h-5 text-purple-500" /> AI Coach Insight
+          {/* AI Coach Insight */}
+          <motion.div variants={itemVariants} className="bg-[#FFD600] text-black rounded-[32px] p-6 sm:p-8 relative overflow-hidden group">
+            <div className="absolute -right-8 -top-8 text-black/10 group-hover:scale-110 transition-transform duration-500">
+              <Brain className="w-48 h-48" />
+            </div>
+            
+            <h3 className="text-xl font-black mb-4 flex items-center gap-2 relative z-10">
+              <Brain className="w-6 h-6" /> AI Intelligence
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              "Your sleep was optimal last night. I've adjusted your macros to +200 calories today to support the heavy upper body session. Hit it hard!"
+            <p className="text-black/80 font-bold leading-relaxed mb-6 relative z-10">
+              "HRV indicates prime readiness. Increasing volume on compound lifts by 5% today is recommended."
             </p>
-            <Link href="/dashboard/ai-coach" className="text-[#00D4FF] text-sm font-bold flex items-center gap-1 hover:text-white transition-colors">
-              Chat with AI <ArrowRight className="w-4 h-4" />
+            <Link href="/dashboard/ai-coach" className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-white hover:text-black transition-colors relative z-10 shadow-lg">
+              View Analysis <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
+
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

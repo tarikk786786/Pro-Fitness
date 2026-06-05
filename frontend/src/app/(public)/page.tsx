@@ -573,6 +573,62 @@ function AICoachSection() {
   );
 }
 
+/* ===================== SAFE ENVIRONMENT SECTION ===================== */
+function SafeEnvironmentSection() {
+  const container = useRef<HTMLDivElement>(null);
+  useGSAP(() => {
+    const tl = gsap.timeline({ scrollTrigger: { trigger: container.current, start: "top 75%" } });
+    tl.fromTo(".safe-tag", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" })
+      .fromTo(".safe-title", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.4")
+      .fromTo(".safe-desc", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
+      .fromTo(".safe-card", { y: 50, opacity: 0, rotateX: -10 }, { y: 0, opacity: 1, rotateX: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" }, "-=0.4");
+  }, { scope: container });
+
+  const features = [
+    { icon: ShieldCheck, title: "Safety Before Intensity", desc: "Expert supervision ensures proper form and minimizes injury risk. Your well-being is our top priority." },
+    { icon: HeartPulse, title: "Women's Comfort First", desc: "A secure, respectful, and empowering space designed for women to train with absolute confidence." },
+    { icon: Users, title: "Professionalism & Respect", desc: "A disciplined atmosphere free of intimidation. We foster a supportive community for all levels." },
+    { icon: Dumbbell, title: "Discipline Creates Transformation", desc: "We provide the structure and elite guidance you need to build lifelong habits and achieve real results." }
+  ];
+
+  return (
+    <section ref={container} className="py-32 bg-[#050505] relative overflow-hidden" style={{ perspective: "1200px" }}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(255,214,0,0.04)_0%,transparent_60%)] pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center mb-20">
+          <p className="safe-tag opacity-0 text-[#FFD600] text-xs font-bold tracking-[0.35em] uppercase font-montserrat mb-4">Elite Standards</p>
+          <h2 className="safe-title opacity-0 font-bebas text-5xl md:text-7xl text-white tracking-wide uppercase mb-6">
+            Safe & <span className="text-[#FFD600]">Professional</span> Environment
+          </h2>
+          <p className="safe-desc opacity-0 text-gray-500 max-w-2xl mx-auto text-base font-light leading-relaxed">
+            We believe that true transformation happens in an environment built on respect, safety, and unwavering discipline. Step into a sanctuary designed for focused progress.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {features.map((f, i) => (
+            <div
+              key={i}
+              className="safe-card opacity-0 group bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 hover:border-[#FFD600]/20 hover:bg-[#0c0c0c] transition-all duration-500 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD600]/5 blur-[50px] rounded-full group-hover:bg-[#FFD600]/10 transition-colors duration-500" />
+              <div className="flex gap-6 relative z-10">
+                <div className="w-14 h-14 bg-[#111] border border-white/8 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:border-[#FFD600]/30 transition-colors duration-400">
+                  <f.icon className="w-7 h-7 text-[#FFD600]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2 text-white tracking-wide">{f.title}</h3>
+                  <p className="text-gray-500 leading-relaxed text-sm font-light">{f.desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ===================== MEMBERSHIP SECTION ===================== */
 function MembershipSection() {
   const container = useRef<HTMLDivElement>(null);
@@ -778,6 +834,7 @@ export default function Home() {
       <FeaturesSection />
       <TransformationSection />
       <AICoachSection />
+      <SafeEnvironmentSection />
       <MembershipSection />
       <TestimonialsSection />
       <CTASection />
