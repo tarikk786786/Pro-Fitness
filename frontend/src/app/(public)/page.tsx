@@ -642,16 +642,20 @@ function MembershipSection() {
 
   const plans = [
     {
-      name: "BASIC", price: "999", period: "month", color: "#FFFFFF",
-      features: ["Access to gym floor", "Basic AI Workout Plan", "Group Classes (2/month)", "Locker Room Access", "Progress Tracker"]
+      name: "DAILY PASS", price: "200", period: "day", color: "#FFFFFF",
+      features: ["1-Day Gym Access", "Standard Equipment", "Locker Room Access", "Free Wi-Fi"]
     },
     {
-      name: "PRO", price: "1,999", period: "month", color: "#FFD600", popular: true,
-      features: ["Everything in Basic", "Advanced AI Coach", "Custom Diet Plans", "Unlimited Group Classes", "Monthly Body Analysis", "Priority Support"]
+      name: "WEEKLY PLAN", price: "500", period: "week", color: "#FFFFFF",
+      features: ["7-Day Gym Access", "Standard Equipment", "Locker Room Access", "Free Wi-Fi", "1 Group Class"]
     },
     {
-      name: "ELITE", price: "3,999", period: "month", color: "#FFFFFF",
-      features: ["Everything in Pro", "4 Personal Sessions/mo", "Spa & Recovery Access", "24/7 Direct Trainer Chat", "Quarterly Health Report", "VIP Events Access"]
+      name: "MONTHLY PLAN", price: "1,000", period: "month", color: "#FFD600", popular: true,
+      features: ["Full Month Access", "All Equipment & Weights", "Unlimited Group Classes", "Fitness Assessment", "Locker Room Access"]
+    },
+    {
+      name: "ADMISSION + MONTHLY", price: "1,000", period: "registration", color: "#FFFFFF",
+      features: ["Registration Fee Included", "First Month Access", "Welcome Kit", "Personalized Plan", "Diet Consultation"]
     },
   ];
 
@@ -670,7 +674,7 @@ function MembershipSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-center max-w-7xl mx-auto">
           {plans.map((plan, i) => (
             <div
               key={i}
