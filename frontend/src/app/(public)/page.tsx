@@ -654,7 +654,7 @@ function MembershipSection() {
       features: ["Full Month Access", "All Equipment & Weights", "Unlimited Group Classes", "Fitness Assessment", "Locker Room Access"]
     },
     {
-      name: "ADMISSION + MONTHLY", price: "1,000", period: "registration", color: "#FFFFFF",
+      name: "ADMISSION + MONTHLY", price: "1,500", period: "registration", color: "#FFFFFF",
       features: ["Registration Fee Included", "First Month Access", "Welcome Kit", "Personalized Plan", "Diet Consultation"]
     },
   ];

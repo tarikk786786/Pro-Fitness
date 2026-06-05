@@ -68,8 +68,8 @@ const PLANS = [
   {
     id: "admission",
     tier: "Admission + Monthly Advance",
-    price: 1000,
-    displayPrice: "1,000",
+    price: 1500,
+    displayPrice: "1,500",
     period: "registration",
     description: "Mandatory for new members. Includes registration and first month.",
     features: [
