@@ -18,16 +18,22 @@ const PLANS = [
     price: 200,
     displayPrice: "200",
     period: "per day",
-    description: "Perfect for visitors or quick sessions without commitment.",
+    description: "Perfect for individuals looking for a focused daily workout experience in a professional gym environment.",
     features: [
-      "1-Day Gym Access",
-      "Standard Equipment",
-      "Locker Room Access",
-      "Free Wi-Fi"
+      "1-Day Full Gym Access",
+      "Strength & Cardio Training Area",
+      "Professional Workout Environment",
+      "Trainer Workout Guidance",
+      "Safe & Disciplined Atmosphere",
+      "High-Quality Gym Equipment",
+      "Beginner-Friendly Support",
+      "Free Drinking Water Access",
+      "Comfortable Workout Space",
+      "Fitness Progress Guidance"
     ],
     popular: false,
     icon: Dumbbell,
-    cta: "Get Daily Pass",
+    cta: "Select DAILY PASS",
   },
   {
     id: "weekly",
@@ -35,17 +41,22 @@ const PLANS = [
     price: 500,
     displayPrice: "500",
     period: "per week",
-    description: "Short-term fitness plan for consistent weekly training.",
+    description: "A balanced short-term fitness plan for maintaining consistency, improving strength, and building healthy workout habits.",
     features: [
-      "7-Day Gym Access",
-      "Standard Equipment",
-      "Locker Room Access",
-      "Free Wi-Fi",
-      "1 Group Class"
+      "7-Day Unlimited Gym Access",
+      "Full Workout Equipment Access",
+      "Fat Loss & Strength Support",
+      "Workout Routine Guidance",
+      "Daily Fitness Motivation",
+      "Safe Training Environment",
+      "Flexible Workout Timing",
+      "Cardio & Weight Training Access",
+      "Beginner & Intermediate Friendly",
+      "Progress Monitoring Support"
     ],
-    popular: false,
+    popular: true,
     icon: Star,
-    cta: "Get Weekly Plan",
+    cta: "Select WEEKLY PLAN",
   },
   {
     id: "monthly",
@@ -53,35 +64,47 @@ const PLANS = [
     price: 1000,
     displayPrice: "1,000",
     period: "per month",
-    description: "Our standard monthly commitment for dedicated members.",
+    description: "A complete transformation-focused membership designed for consistent progress, disciplined training, and long-term fitness improvement.",
     features: [
-      "Full Month Access",
-      "All Equipment & Weights",
-      "Unlimited Group Classes",
-      "Fitness Assessment",
-      "Locker Room Access"
+      "Full Month Unlimited Access",
+      "Advanced Strength & Cardio Equipment",
+      "Professional Workout Guidance",
+      "Personalized Workout Suggestions",
+      "Body Progress Tracking",
+      "Fat Loss & Muscle Gain Support",
+      "Consistency & Recovery Guidance",
+      "Performance Improvement Support",
+      "Comfortable & Professional Atmosphere",
+      "Dedicated Fitness Assistance",
+      "Transformation Progress Monitoring",
+      "Nutrition & Meal Guidance Support"
     ],
-    popular: true,
+    popular: false,
     icon: Crown,
-    cta: "Join Now",
+    cta: "Select MONTHLY PLAN",
   },
   {
     id: "admission",
-    tier: "Admission + Monthly Advance",
+    tier: "ADMISSION + MONTHLY",
     price: 1500,
     displayPrice: "1,500",
     period: "registration",
-    description: "Mandatory for new members. Includes registration and first month.",
+    description: "One-time admission and membership activation process for new members joining the PRO FITNESS transformation environment.",
     features: [
-      "Registration Fee Included",
-      "First Month Access",
-      "Welcome Kit",
-      "Personalized Plan",
-      "Diet Consultation"
+      "Membership Registration Included",
+      "First Month Activation Support",
+      "Personalized Fitness Assessment",
+      "Workout Goal Planning",
+      "Beginner Guidance Support",
+      "Fitness Progress Consultation",
+      "Nutrition Guidance Introduction",
+      "Gym Rules & Safety Orientation",
+      "Professional Training Environment Access",
+      "Transformation Journey Setup"
     ],
     popular: false,
     icon: Check,
-    cta: "Start Your Journey",
+    cta: "Start Membership",
   }
 ];
 
@@ -271,12 +294,11 @@ export default function MembershipPage() {
 
         <h1 className="cinematic-text text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none mb-6 text-white drop-shadow-2xl">
           CHOOSE YOUR <br/>
-          <span className="text-[#FFD600]">MEMBERSHIP</span>
+          <span className="text-[#FFD600]">FITNESS JOURNEY</span>
         </h1>
         
         <p className="cinematic-text text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-          Premium fitness programs designed to transform your lifestyle. 
-          Experience unmatched equipment, professional guidance, and an elite community.
+          Professional training, disciplined environment, and real transformation support designed for every fitness level.
         </p>
       </section>
 
@@ -339,7 +361,7 @@ export default function MembershipPage() {
                   {plan.period}
                 </div>
 
-                <p className="text-zinc-400 text-sm leading-relaxed mb-8 h-12">
+                <p className="text-zinc-400 text-sm leading-relaxed mb-8 min-h-[4rem]">
                   {plan.description}
                 </p>
 
@@ -373,6 +395,45 @@ export default function MembershipPage() {
               </motion.div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────
+          PROFESSIONAL MESSAGE
+      ───────────────────────────────────────────── */}
+      <section className="bg-[#0A0A0A] py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#111111] to-[#0A0A0A]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex-1 space-y-6 text-center md:text-left"
+            >
+              <h3 className="text-2xl md:text-3xl font-bebas tracking-wide text-white">
+                “Consistency, discipline, and proper guidance create real transformation.”
+              </h3>
+              <p className="text-[#FFD600] font-black uppercase tracking-widest text-sm">
+                Train smart, train safely.
+              </p>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex-1 border-l-2 border-[#FFD600]/20 pl-8"
+            >
+              <p className="text-zinc-400 text-lg leading-relaxed">
+                <span className="text-white font-medium">Professional environment.</span><br />
+                <span className="text-white font-medium">Focused training.</span><br />
+                <span className="text-[#FFD600] font-bold">Real progress.</span>
+              </p>
+            </motion.div>
+          </div>
         </div>
       </section>
 

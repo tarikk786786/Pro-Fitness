@@ -643,19 +643,44 @@ function MembershipSection() {
   const plans = [
     {
       name: "DAILY PASS", price: "200", period: "day", color: "#FFFFFF",
-      features: ["1-Day Gym Access", "Standard Equipment", "Locker Room Access", "Free Wi-Fi"]
+      features: [
+        "1-Day Full Gym Access", "Strength & Cardio Training Area", 
+        "Professional Workout Environment", "Trainer Workout Guidance", 
+        "Safe & Disciplined Atmosphere", "High-Quality Gym Equipment", 
+        "Beginner-Friendly Support", "Free Drinking Water Access", 
+        "Comfortable Workout Space", "Fitness Progress Guidance"
+      ]
     },
     {
-      name: "WEEKLY PLAN", price: "500", period: "week", color: "#FFFFFF",
-      features: ["7-Day Gym Access", "Standard Equipment", "Locker Room Access", "Free Wi-Fi", "1 Group Class"]
+      name: "WEEKLY PLAN", price: "500", period: "week", color: "#FFFFFF", popular: true,
+      features: [
+        "7-Day Unlimited Gym Access", "Full Workout Equipment Access", 
+        "Fat Loss & Strength Support", "Workout Routine Guidance", 
+        "Daily Fitness Motivation", "Safe Training Environment", 
+        "Flexible Workout Timing", "Cardio & Weight Training Access", 
+        "Beginner & Intermediate Friendly", "Progress Monitoring Support"
+      ]
     },
     {
-      name: "MONTHLY PLAN", price: "1,000", period: "month", color: "#FFD600", popular: true,
-      features: ["Full Month Access", "All Equipment & Weights", "Unlimited Group Classes", "Fitness Assessment", "Locker Room Access"]
+      name: "MONTHLY PLAN", price: "1,000", period: "month", color: "#FFD600",
+      features: [
+        "Full Month Unlimited Access", "Advanced Strength & Cardio Equipment", 
+        "Professional Workout Guidance", "Personalized Workout Suggestions", 
+        "Body Progress Tracking", "Fat Loss & Muscle Gain Support", 
+        "Consistency & Recovery Guidance", "Performance Improvement Support", 
+        "Comfortable & Professional Atmosphere", "Dedicated Fitness Assistance", 
+        "Transformation Progress Monitoring", "Nutrition & Meal Guidance Support"
+      ]
     },
     {
-      name: "ADMISSION + MONTHLY", price: "1,500", period: "registration", color: "#FFFFFF",
-      features: ["Registration Fee Included", "First Month Access", "Welcome Kit", "Personalized Plan", "Diet Consultation"]
+      name: "ADMISSION + MONTHLY", price: "1,000", period: "registration", color: "#FFFFFF",
+      features: [
+        "Membership Registration Included", "First Month Activation Support", 
+        "Personalized Fitness Assessment", "Workout Goal Planning", 
+        "Beginner Guidance Support", "Fitness Progress Consultation", 
+        "Nutrition Guidance Introduction", "Gym Rules & Safety Orientation", 
+        "Professional Training Environment Access", "Transformation Journey Setup"
+      ]
     },
   ];
 
@@ -665,12 +690,12 @@ function MembershipSection() {
         style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "48px 48px" }} />
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <p className="text-[#FFD600] text-xs font-bold tracking-[0.35em] uppercase font-montserrat mb-4">No Hidden Fees</p>
+          <p className="text-[#FFD600] text-xs font-bold tracking-[0.35em] uppercase font-montserrat mb-4">Choose Your Fitness Journey</p>
           <h2 className="font-bebas text-5xl md:text-8xl text-white tracking-wide uppercase mb-4">
             Premium <span className="text-[#FFD600]">Tiers</span>
           </h2>
           <p className="text-gray-500 max-w-lg mx-auto text-base font-light">
-            Choose the tier that matches your ambition. Cancel anytime, upgrade whenever.
+            Professional training, disciplined environment, and real transformation support designed for every fitness level.
           </p>
         </div>
 
