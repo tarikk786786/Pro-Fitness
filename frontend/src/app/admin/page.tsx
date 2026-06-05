@@ -289,23 +289,8 @@ function CapacityTooltip({
 
 /* ─────────────────────── CUSTOM PIE LABEL ─────────────────────── */
 
-function renderCustomLabel({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  name,
-}: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-  name: string;
-}) {
+function renderCustomLabel(props: any) {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent, name } = props;
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 1.4;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -710,7 +695,7 @@ export default function AdminDashboard() {
                   barSize={28}
                   fill="#FFD600"
                   fillOpacity={1}
-                  shape={(props: Record<string, unknown>) => {
+                  shape={(props: any) => {
                     const { x, y, width, height, payload } = props as {
                       x: number;
                       y: number;
