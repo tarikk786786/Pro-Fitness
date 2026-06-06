@@ -3,61 +3,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Activity, Stethoscope, Dumbbell, Utensils, ArrowRight, Sparkles, Cpu, ShieldCheck } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search, Activity, Stethoscope, Dumbbell, Utensils, ArrowRight, ShieldCheck, HeartPulse } from "lucide-react";
 import { TOOLS_CONFIG } from "@/lib/ai-tools-config";
 import gsap from "gsap";
 
 const CATEGORIES = [
-  { id: "all", name: "All Modules", icon: Cpu },
-  { id: "fitness", name: "Biometrics", icon: Activity },
-  { id: "health", name: "Health Analytics", icon: Stethoscope },
-  { id: "workout", name: "Training", icon: Dumbbell },
-  { id: "diet", name: "Nutrition", icon: Utensils },
-  { id: "safety", name: "Safety & Form", icon: ShieldCheck },
-];
-
-const SAFETY_TOOLS = [
-  {
-    id: "warmup-ai",
-    name: "Dynamic Warm-up AI",
-    description: "Generates biomechanically sound warm-up protocols based on your target muscle groups to prevent strains.",
-    category: "safety",
-    path: "#",
-    isNew: true
-  },
-  {
-    id: "cooldown-ai",
-    name: "Cool-down Architect",
-    description: "Prescribes tailored static stretching and mobility flows to accelerate lactic acid clearance and flexibility.",
-    category: "safety",
-    path: "#",
-    isNew: true
-  },
-  {
-    id: "recovery-ai",
-    name: "Recovery Dashboard",
-    description: "Tracks CNS fatigue and prescribes automated reminders for sleep optimization, hydration, and active recovery.",
-    category: "safety",
-    path: "#",
-    isNew: true
-  },
-  {
-    id: "form-ai",
-    name: "Posture & Form Check",
-    description: "Advanced AI analysis of your lifting mechanics to ensure optimal posture and force production.",
-    category: "safety",
-    path: "#",
-    isNew: true
-  },
-  {
-    id: "injury-ai",
-    name: "Injury Pre-hab",
-    description: "Identifies structural imbalances and prescribes targeted corrective exercises to bulletproof your joints.",
-    category: "safety",
-    path: "#",
-    isNew: true
-  }
+  { id: "all", name: "All Programs", icon: Dumbbell },
+  { id: "Fat Loss", name: "Fat Loss", icon: Activity },
+  { id: "Muscle Gain", name: "Muscle Gain", icon: HeartPulse },
+  { id: "Strength", name: "Strength", icon: Dumbbell },
+  { id: "Nutrition", name: "Nutrition", icon: Utensils },
+  { id: "Wellness", name: "Wellness", icon: ShieldCheck },
 ];
 
 export default function AIToolsHub() {
@@ -73,60 +29,55 @@ export default function AIToolsHub() {
     );
   }, []);
 
-  const allTools = [...TOOLS_CONFIG, ...SAFETY_TOOLS];
-
-  const filteredTools = allTools.filter(
+  const filteredTools = TOOLS_CONFIG.filter(
     (tool) => 
       (activeTab === "all" || tool.category === activeTab) && 
       tool.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white py-20 px-6 overflow-hidden relative">
-      {/* Background accents */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#FFD600]/5 blur-[120px] pointer-events-none rounded-full" />
+    <div className="min-h-screen bg-[#0A0A0A] text-white py-20 px-6 overflow-hidden relative font-poppins">
       
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div ref={headerRef} className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFD600]/10 border border-[#FFD600]/20 rounded-full mb-8">
-            <Sparkles className="w-4 h-4 text-[#FFD600]" />
-            <span className="text-[#FFD600] text-sm font-bold tracking-widest uppercase">Proprietary Tech</span>
+      <div className="max-w-7xl mx-auto relative z-10 mt-10">
+        <div ref={headerRef} className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFD600]/10 border border-[#FFD600]/20 rounded-full mb-6">
+            <HeartPulse className="w-4 h-4 text-[#FFD600]" />
+            <span className="text-[#FFD600] text-sm font-bold tracking-widest uppercase">Expert Guidance</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-none">
-            Intelligence <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD600] to-[#FFE666]">Ecosystem</span>
+          <h1 className="font-bebas text-6xl md:text-8xl tracking-wider text-white mb-6 leading-none">
+            EXPERT <span className="text-[#FFD600]">PROGRAMS</span>
           </h1>
-          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto font-medium">
-            Access our elite suite of AI-driven calculators, analyzers, and protocol generators to engineer your ultimate physique.
+          <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+            Explore our professional training programs and calculators designed by the elite coaching team at PRO FITNESS.
           </p>
         </div>
 
         {/* Search & Filter */}
-        <div className="bg-[#111] border border-zinc-800 rounded-3xl p-4 md:p-6 mb-16 shadow-2xl backdrop-blur-xl flex flex-col xl:flex-row gap-6 items-center justify-between sticky top-4 z-20">
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 md:p-6 mb-16 flex flex-col xl:flex-row gap-6 items-center justify-between sticky top-20 z-20 backdrop-blur-xl">
           <div className="flex overflow-x-auto pb-2 xl:pb-0 w-full xl:w-auto gap-3 hide-scrollbar">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveTab(cat.id)}
-                className={`flex items-center whitespace-nowrap px-6 py-4 rounded-2xl text-sm font-black uppercase tracking-wider transition-all duration-300 ${
+                className={`flex items-center whitespace-nowrap px-6 py-4 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all duration-300 ${
                   activeTab === cat.id 
-                    ? "bg-[#FFD600] text-black shadow-[0_0_15px_rgba(255,214,0,0.4)]" 
-                    : "bg-black border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white"
+                    ? "bg-[#FFD600] text-black" 
+                    : "bg-black border border-zinc-800 text-gray-400 hover:border-zinc-600 hover:text-white"
                 }`}
               >
-                <cat.icon className={`w-5 h-5 mr-3 ${activeTab === cat.id ? "text-black" : "text-zinc-500"}`} />
+                <cat.icon className={`w-5 h-5 mr-3 ${activeTab === cat.id ? "text-black" : "text-gray-500"}`} />
                 {cat.name}
               </button>
             ))}
           </div>
 
           <div className="relative w-full xl:w-[400px]">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
             <input 
-              placeholder="Search modules..." 
+              placeholder="Search programs..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 bg-black border border-zinc-800 focus:border-[#FFD600] text-white rounded-2xl outline-none transition-colors font-medium placeholder:text-zinc-600"
+              className="w-full pl-14 pr-6 py-4 bg-black border border-zinc-800 focus:border-[#FFD600] text-white rounded-2xl outline-none transition-colors font-medium placeholder:text-gray-600"
             />
           </div>
         </div>
@@ -144,30 +95,28 @@ export default function AIToolsHub() {
                 key={tool.id}
               >
                 <Link href={tool.path}>
-                  <div className="group relative bg-[#111] border border-zinc-800 hover:border-[#FFD600]/50 rounded-3xl p-8 transition-all duration-500 hover:bg-black hover:shadow-[0_0_30px_rgba(255,214,0,0.1)] h-full flex flex-col justify-between overflow-hidden">
-                    {/* Decorative glow */}
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-[#FFD600]/5 rounded-bl-[100%] -mr-10 -mt-10 transition-transform group-hover:scale-150 group-hover:bg-[#FFD600]/10 duration-700 ease-out" />
+                  <div className="group relative bg-white/5 border border-white/10 hover:border-[#FFD600]/50 rounded-3xl p-8 transition-all duration-500 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(255,214,0,0.15)] h-full flex flex-col justify-between overflow-hidden">
                     
                     <div className="relative z-10">
                       <div className="flex justify-between items-start mb-6">
-                        <div className="p-4 bg-black border border-zinc-800 rounded-2xl group-hover:bg-[#FFD600] group-hover:border-[#FFD600] group-hover:text-black transition-all duration-300">
-                          {tool.category === "health" ? <Stethoscope className="w-6 h-6" /> : 
-                           tool.category === "fitness" ? <Activity className="w-6 h-6" /> :
-                           tool.category === "safety" ? <ShieldCheck className="w-6 h-6" /> :
-                           tool.category === "workout" ? <Dumbbell className="w-6 h-6" /> : <Utensils className="w-6 h-6" />}
+                        <div className="p-4 bg-black border border-white/10 rounded-2xl group-hover:bg-[#FFD600] group-hover:border-[#FFD600] group-hover:text-black transition-all duration-300">
+                           <Dumbbell className="w-6 h-6" />
                         </div>
                         {tool.isNew && (
-                          <span className="bg-[#FFD600]/10 text-[#FFD600] text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded-full border border-[#FFD600]/20">
-                            New
+                          <span className="bg-[#FFD600]/20 text-[#FFD600] text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border border-[#FFD600]/30">
+                            Featured
                           </span>
                         )}
                       </div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight mb-3 group-hover:text-[#FFD600] transition-colors">{tool.name}</h3>
-                      <p className="text-zinc-500 text-base mb-8 leading-relaxed font-medium">{tool.description}</p>
+                      <h3 className="text-2xl font-bebas tracking-wide mb-3 group-hover:text-[#FFD600] transition-colors">{tool.name}</h3>
+                      <p className="text-gray-400 text-sm mb-4 leading-relaxed">{tool.description}</p>
+                      {tool.expertName && (
+                        <p className="text-xs text-gray-500 font-medium mb-8">By {tool.expertName}</p>
+                      )}
                     </div>
 
-                    <div className="relative z-10 flex items-center text-zinc-400 font-bold text-sm tracking-widest uppercase group-hover:text-[#FFD600] transition-colors mt-auto">
-                      Initialize Module 
+                    <div className="relative z-10 flex items-center text-gray-400 font-bold text-sm tracking-widest uppercase group-hover:text-[#FFD600] transition-colors mt-auto">
+                      View Program
                       <ArrowRight className="w-5 h-5 ml-2 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300" />
                     </div>
                   </div>
@@ -178,8 +127,8 @@ export default function AIToolsHub() {
         </motion.div>
 
         {filteredTools.length === 0 && (
-          <div className="text-center py-20 text-zinc-500 font-medium">
-            No modules found matching your criteria.
+          <div className="text-center py-20 text-gray-500 font-medium">
+            No programs found matching your search.
           </div>
         )}
       </div>
