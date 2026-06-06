@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { ArrowRight, Clock } from 'lucide-react';
 import { Poppins, Montserrat, Bebas_Neue } from 'next/font/google';
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,7 +53,13 @@ export default function BlogPage() {
           {posts.map((post, i) => (
             <div key={i} className="blog-card group cursor-pointer">
               <div className="relative h-72 rounded-[30px] overflow-hidden mb-6 border border-white/10 group-hover:border-[#FFD600]/50 transition-colors duration-500">
-                <img src={post.img} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                <Image 
+                  src={post.img} 
+                  alt={post.title} 
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transform group-hover:scale-110 transition-transform duration-700" 
+                />
                 <div className="absolute top-4 left-4 bg-[#FFD600] text-black text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full">
                   {post.tag}
                 </div>

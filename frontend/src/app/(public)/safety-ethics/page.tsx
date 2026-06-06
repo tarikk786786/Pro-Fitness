@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Shield, Lock, EyeOff, AlertTriangle, Users, Target, ShieldCheck, Dumbbell } from "lucide-react";
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -139,12 +140,14 @@ export default function SafetyEthicsPage() {
             </ul>
           </div>
           <div className="w-full md:w-1/2">
-            <div className="aspect-square md:aspect-video rounded-3xl overflow-hidden border border-white/10 relative group">
+              <div className="aspect-square md:aspect-video rounded-3xl overflow-hidden border border-white/10 relative group">
               <div className="absolute inset-0 bg-gradient-to-tr from-[#FFD600]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
                 alt="Women Training" 
-                className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover filter grayscale hover:grayscale-0 transition-all duration-700"
               />
             </div>
           </div>

@@ -18,14 +18,36 @@ const adminRoutes = require('./routes/admin');
 const trainerRoutes = require('./routes/trainer');
 const notificationRoutes = require('./routes/notifications');
 const whatsappRoutes = require('./routes/whatsapp');
+const mediaRoutes = require('./routes/media');
+const healthRoutes = require('./routes/health');
+const coachRoutes = require('./routes/coach');
 
 const { errorHandler } = require('./middleware/errorHandler');
 const { connectToWhatsApp } = require('./services/whatsappService');
 const { startRemindersCron } = require('./cron/reminders');
+const http = require('http');
+const { Server } = require('socket.io');
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Make io accessible to routes
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  console.log('A user connected via Socket.io');
+  socket.on('disconnect', () => {
+    console.log('User disconnected from Socket.io');
+  });
+});
 
 // Middleware
 app.use(express.json());
@@ -61,6 +83,9 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/trainer', trainerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/health', healthRoutes);
+app.use('/api/coach', coachRoutes);
 
 app.use(errorHandler);
 
@@ -88,7 +113,7 @@ connectDB().then(() => {
   // Start Background Cron Jobs
   startRemindersCron();
 
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server & WebSocket running on port ${PORT}`));
 }).catch(err => {
   console.error('Fatal Database Connection Error:', err);
   process.exit(1);

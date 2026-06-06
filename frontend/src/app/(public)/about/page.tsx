@@ -1,104 +1,115 @@
 "use client";
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-import { Target, Users, MapPin, Award, ChevronRight } from 'lucide-react';
-import { Poppins, Montserrat, Bebas_Neue } from 'next/font/google';
-
-gsap.registerPlugin(ScrollTrigger);
-
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '500', '700', '900'] });
-const bebas = Bebas_Neue({ subsets: ['latin'], weight: ['400'] });
+import { motion } from "framer-motion";
+import { ShieldCheck, Users, Target, Heart } from "lucide-react";
 
 export default function AboutPage() {
-  const container = useRef<HTMLDivElement>(null);
-  
-  useGSAP(() => {
-    const sections = gsap.utils.toArray('.gsap-section');
-    sections.forEach((sec: any) => {
-      gsap.from(sec, {
-        opacity: 0,
-        y: 100,
-        duration: 1,
-        scrollTrigger: {
-          trigger: sec,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-    });
-  }, { scope: container });
+  const values = [
+    {
+      icon: <ShieldCheck className="w-8 h-8 text-[#FFD600]" />,
+      title: "Safety First",
+      description: "State-of-the-art equipment maintained to the highest safety standards."
+    },
+    {
+      icon: <Heart className="w-8 h-8 text-[#FFD600]" />,
+      title: "Comfort & Privacy",
+      description: "A welcoming environment with a priority on women's comfort and safety."
+    },
+    {
+      icon: <Users className="w-8 h-8 text-[#FFD600]" />,
+      title: "Professional Guidance",
+      description: "Expert trainers dedicated to helping you achieve your fitness goals."
+    },
+    {
+      icon: <Target className="w-8 h-8 text-[#FFD600]" />,
+      title: "Real Results",
+      description: "No gimmicks. Just hard work, proper nutrition, and proven training methods."
+    }
+  ];
 
   return (
-    <div ref={container} className={`bg-[#0A0A0A] min-h-screen text-white pt-32 pb-32 overflow-hidden ${poppins.className}`}>
-      {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center border-b border-white/10">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FFD600]/5 to-[#0A0A0A] z-0" />
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
+    <div className="min-h-screen bg-[#111111] text-white pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-bold mb-6"
           >
-            <h1 className={`text-7xl md:text-9xl tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFD600] to-white mb-6 ${bebas.className}`}>
-              OUR LEGACY
-            </h1>
-          </motion.div>
+            Welcome to <span className="text-[#FFD600]">PRO FITNESS</span>
+          </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className={`text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto ${montserrat.className}`}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-gray-400 max-w-2xl mx-auto"
           >
-            Forged in discipline. Perfected by science. We are the architects of human potential.
+            The premium fitness destination in Balasore, redefining what a gym should be. 
+            Real equipment, real training, and a real community.
           </motion.p>
         </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="gsap-section py-24 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 className={`text-5xl md:text-7xl mb-8 ${bebas.className}`}>BEYOND <span className="text-[#FFD600]">LIMITS</span></h2>
-            <p className="text-gray-400 text-lg leading-relaxed mb-6">
-              We don't just change bodies; we forge unbreakable minds. Our facilities merge state-of-the-art equipment with world-class coaching.
+        {/* Story Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="relative h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-tr from-black to-zinc-900 flex items-center justify-center"
+          >
+            <span className="text-[#FFD600] font-bold text-2xl tracking-widest">PRO FITNESS</span>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="space-y-6"
+          >
+            <h2 className="text-3xl font-bold border-l-4 border-[#FFD600] pl-4">Our Story</h2>
+            <p className="text-gray-300 leading-relaxed">
+              Located in the heart of Sunnat, Balasore, PRO FITNESS was born from a simple vision: 
+              to provide a world-class training facility that feels like home. We believe that 
+              fitness is for everyone, regardless of age or experience level.
             </p>
-            <div className="h-1 w-24 bg-[#FFD600] rounded-full shadow-[0_0_15px_rgba(255,214,0,0.5)]" />
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            {[ 
-              { icon: Users, val: '25K+', label: 'Elite Members' },
-              { icon: Target, val: '99%', label: 'Goal Success' },
-              { icon: MapPin, val: '12', label: 'Global Studios' },
-              { icon: Award, val: '150+', label: 'Master Coaches' }
-            ].map((stat, i) => (
-              <div key={i} className={`bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl flex flex-col items-center justify-center text-center transform transition-all duration-500 hover:scale-105 hover:border-[#FFD600]/50 hover:shadow-[0_0_30px_rgba(255,214,0,0.15)] ${i % 2 !== 0 ? 'translate-y-8' : ''}`}>
-                <stat.icon className="w-12 h-12 text-[#FFD600] mb-4 drop-shadow-[0_0_10px_rgba(255,214,0,0.8)]" />
-                <h4 className={`text-4xl ${bebas.className}`}>{stat.val}</h4>
-                <p className="text-gray-500 text-sm uppercase tracking-widest font-bold mt-2">{stat.label}</p>
-              </div>
+            <p className="text-gray-300 leading-relaxed">
+              We take pride in our clean, safe, and motivating environment. Our facility is designed 
+              with a special emphasis on women's comfort and privacy, ensuring that every member 
+              feels secure and confident during their workout.
+            </p>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10 mt-8">
+              <h3 className="text-xl font-semibold mb-2 text-[#FFD600]">Visit Us</h3>
+              <p className="text-gray-300">Sunnat, Balasore, Odisha - 756001</p>
+              <p className="text-gray-300 mt-2">Phone: +91 91144 11026</p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Values Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-12">Why Choose Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + (index * 0.1) }}
+                className="bg-[#1a1a1a] p-8 rounded-2xl border border-white/5 hover:border-[#FFD600]/30 transition-colors"
+              >
+                <div className="bg-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10">
+                  {value.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-3">{value.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{value.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
-      
-      {/* Cinematic Image Section */}
-      <section className="gsap-section py-24">
-        <div className="container mx-auto px-4">
-           <div className="relative h-[60vh] rounded-[40px] overflow-hidden border border-white/10">
-             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" alt="Gym interior" className="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:mix-blend-normal hover:opacity-100 transition-all duration-1000" />
-             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
-             <div className="absolute bottom-10 left-10">
-               <h3 className={`text-5xl md:text-7xl ${bebas.className} text-white drop-shadow-2xl`}>THE <span className="text-[#FFD600]">SANCTUARY</span></h3>
-             </div>
-           </div>
-        </div>
-      </section>
+
+      </div>
     </div>
   );
 }

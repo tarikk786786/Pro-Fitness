@@ -22,10 +22,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       const { default: Lenis } = await import("lenis");
 
       const lenis = new Lenis({
-        duration: 1.4,
+        duration: 1.2,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        lerp: 0.08,
+        wheelMultiplier: 1.1,
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1.5,
       });
 
       lenisRef.current = lenis;

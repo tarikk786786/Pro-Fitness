@@ -17,21 +17,11 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
 } from 'lucide-react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  Legend,
-} from 'recharts';
+import dynamic from 'next/dynamic';
+
+const AdminRevenueChart = dynamic(() => import('@/components/admin/AdminCharts').then(mod => mod.AdminRevenueChart), { ssr: false, loading: () => <div className="w-full h-full animate-pulse bg-white/5 rounded-xl"></div> });
+const AdminMembershipPieChart = dynamic(() => import('@/components/admin/AdminCharts').then(mod => mod.AdminMembershipPieChart), { ssr: false, loading: () => <div className="w-full h-full animate-pulse bg-white/5 rounded-xl"></div> });
+const AdminCapacityBarChart = dynamic(() => import('@/components/admin/AdminCharts').then(mod => mod.AdminCapacityBarChart), { ssr: false, loading: () => <div className="w-full h-full animate-pulse bg-white/5 rounded-xl"></div> });
 
 /* ─────────────────────── DATA ─────────────────────── */
 
@@ -388,7 +378,21 @@ export default function AdminDashboard() {
             Real-time overview • Updated just now
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+          <button
+            onClick={async () => {
+              try {
+                await fetch('/api/media/sync', { method: 'POST' });
+                alert('Instagram content synced successfully!');
+              } catch (error) {
+                alert('Error syncing content');
+              }
+            }}
+            className="px-4 py-2 bg-[#FFD600]/10 border border-[#FFD600]/20 hover:bg-[#FFD600] hover:text-black rounded-xl text-sm font-bold text-[#FFD600] flex items-center gap-2 transition-all"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Sync Instagram Content
+          </button>
           <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-bold text-gray-400 flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Last 30 Days
@@ -497,48 +501,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#FFD600" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#FFD600" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#222" />
-                <XAxis
-                  dataKey="day"
-                  stroke="#555"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  dy={10}
-                  interval={4}
-                />
-                <YAxis
-                  stroke="#555"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v: number) => `₹${(v / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#FFD600"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#revenueGradient)"
-                  activeDot={{
-                    r: 7,
-                    fill: '#FFD600',
-                    stroke: '#0A0A0A',
-                    strokeWidth: 4,
-                  }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <AdminRevenueChart data={revenueData} />
           </div>
         </motion.div>
 
@@ -553,35 +516,7 @@ export default function AdminDashboard() {
           </h3>
           <p className="text-xs text-gray-500 font-semibold mb-6 ml-5">342 active members</p>
           <div className="h-[240px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={membershipData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={90}
-                  paddingAngle={4}
-                  dataKey="value"
-                  labelLine={false}
-                  label={renderCustomLabel}
-                  stroke="none"
-                >
-                  {membershipData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#111111',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '16px',
-                    fontWeight: 'bold',
-                    color: '#fff',
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <AdminMembershipPieChart data={membershipData} />
           </div>
           {/* Legend */}
           <div className="grid grid-cols-2 gap-3 mt-4">
@@ -668,62 +603,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={capacityData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#222" />
-                <XAxis
-                  dataKey="hour"
-                  stroke="#555"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  dy={10}
-                  interval={1}
-                />
-                <YAxis
-                  stroke="#555"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  domain={[0, 100]}
-                  tickFormatter={(v: number) => `${v}%`}
-                />
-                <Tooltip content={<CapacityTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                <Bar
-                  dataKey="capacity"
-                  radius={[6, 6, 0, 0]}
-                  barSize={28}
-                  fill="#FFD600"
-                  fillOpacity={1}
-                  shape={(props: any) => {
-                    const { x, y, width, height, payload } = props as {
-                      x: number;
-                      y: number;
-                      width: number;
-                      height: number;
-                      payload: { capacity: number };
-                    };
-                    const isPeak = payload.capacity >= 80;
-                    return (
-                      <rect
-                        x={x}
-                        y={y}
-                        width={width}
-                        height={height}
-                        rx={6}
-                        ry={6}
-                        fill={isPeak ? '#FFD600' : 'rgba(255,214,0,0.3)'}
-                        style={
-                          isPeak
-                            ? { filter: 'drop-shadow(0 0 8px rgba(255,214,0,0.4))' }
-                            : undefined
-                        }
-                      />
-                    );
-                  }}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <AdminCapacityBarChart data={capacityData} />
           </div>
           {/* Peak hours callout */}
           <div className="mt-4 flex items-center gap-3 bg-[#FFD600]/5 border border-[#FFD600]/10 rounded-xl px-4 py-3">

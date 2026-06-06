@@ -1,229 +1,412 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, Variants } from "framer-motion";
-import gsap from "gsap";
-import { Flame, Droplets, Trophy, Activity, Dumbbell, ArrowRight, Brain, Clock, ChevronRight } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from "recharts";
-import Link from "next/link";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ChevronRight, 
+  Activity, 
+  Target, 
+  Utensils, 
+  Dumbbell, 
+  Droplets,
+  Share2,
+  Download,
+  CheckCircle2,
+  Clock,
+  Flame,
+  User,
+  MapPin
+} from "lucide-react";
 
-const weeklyData = [
-  { name: 'Mon', calories: 400 },
-  { name: 'Tue', calories: 300 },
-  { name: 'Wed', calories: 550 },
-  { name: 'Thu', calories: 200 },
-  { name: 'Fri', calories: 600 },
-  { name: 'Sat', calories: 0 },
-  { name: 'Sun', calories: 450 },
-];
+// Types
+type Gender = "Male" | "Female" | "Other" | "";
+type Goal = "Fat Loss" | "Muscle Gain" | "Beginner" | "Women Fitness" | "Home Workout" | "";
+type DietType = "Veg" | "Non-Veg" | "";
+type Location = "Home" | "Gym" | "";
 
-const weightData = [
-  { date: 'Week 1', weight: 82 },
-  { date: 'Week 2', weight: 81.2 },
-  { date: 'Week 3', weight: 80.5 },
-  { date: 'Week 4', weight: 79.8 },
-];
+interface UserProfile {
+  name: string;
+  age: string;
+  height: string;
+  weight: string;
+  gender: Gender;
+  goal: Goal;
+  diet: DietType;
+  location: Location;
+}
 
-const timetable = [
-  { time: "07:00 AM", task: "Morning Run", type: "cardio" },
-  { time: "09:30 AM", task: "Protein Breakfast", type: "diet" },
-  { time: "02:00 PM", task: "Hydration Check", type: "habit" },
-  { time: "06:00 PM", task: "Upper Body Power", type: "workout", active: true },
-];
+export default function DashboardWizard() {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [profile, setProfile] = useState<UserProfile>({
+    name: "",
+    age: "",
+    height: "",
+    weight: "",
+    gender: "",
+    goal: "",
+    diet: "",
+    location: ""
+  });
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } }
-};
-
-export default function DashboardOverview() {
-  const headerRef = useRef(null);
-
-  useEffect(() => {
-    if (headerRef.current) {
-      gsap.fromTo(headerRef.current, 
-        { opacity: 0, y: -30 }, 
-        { opacity: 1, y: 0, duration: 1, ease: "power4.out" }
-      );
-    }
-  }, []);
+  const handleAnalyze = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStep(2);
+    // Simulate API call / Expert system processing
+    setTimeout(() => {
+      setStep(3);
+    }, 2500);
+  };
 
   return (
-    <motion.div 
-      className="space-y-8 max-w-[1400px] mx-auto pb-12"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6" ref={headerRef}>
-        <div>
-          <h1 className="text-4xl font-black tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-            Welcome back, Elite.
-          </h1>
-          <p className="text-gray-400 font-medium">Your physiological data is synced and ready.</p>
-        </div>
-        
-        <Link href="/dashboard/workouts" className="group flex items-center gap-2 bg-[#FFD600] text-black px-6 py-3 rounded-full font-black hover:bg-white transition-all shadow-[0_0_20px_rgba(255,214,0,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
-          Launch Session <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </div>
-
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {[
-          { icon: Flame, label: "Active Energy", value: "2,450", unit: "kcal", progress: 75, color: "#FFD600" },
-          { icon: Dumbbell, label: "Volume Load", value: "14.2", unit: "tons", progress: 60, color: "#fff" },
-          { icon: Trophy, label: "Discipline", value: "12", unit: "day streak", progress: 100, color: "#FFD600" },
-          { icon: Droplets, label: "Hydration", value: "2.5", unit: "L / 3.5L", progress: 70, color: "#00D4FF" },
-        ].map((stat, i) => (
-          <motion.div 
-            key={i}
-            variants={itemVariants}
-            className="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 overflow-hidden group hover:bg-white/10 transition-colors"
+    <div className="w-full max-w-2xl mx-auto">
+      <AnimatePresence mode="wait">
+        {/* STEP 1: WIZARD FORM */}
+        {step === 1 && (
+          <motion.div
+            key="step1"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-8"
           >
-            {/* Progress Bar Background */}
-            <div className="absolute bottom-0 left-0 h-1.5 bg-white/5 w-full">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${stat.progress}%` }}
-                transition={{ duration: 1.5, delay: i * 0.2, ease: "easeOut" }}
-                className="h-full rounded-r-full shadow-[0_0_10px_currentColor]"
-                style={{ backgroundColor: stat.color, color: stat.color }}
-              />
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center p-3 bg-[#FFD600]/10 rounded-full mb-2">
+                <Target className="h-8 w-8 text-[#FFD600]" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold">Build Your Indian <span className="text-[#FFD600]">Fitness Plan</span></h1>
+              <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto">
+                Tell us about yourself to get a personalized workout and diet plan instantly.
+              </p>
             </div>
 
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-black/50 flex items-center justify-center border border-white/5 group-hover:border-white/20 transition-colors">
-                  <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+            <form onSubmit={handleAnalyze} className="space-y-8 bg-white/[0.02] border border-white/10 p-6 md:p-8 rounded-3xl backdrop-blur-sm">
+              {/* Personal Info */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2 border-b border-white/10 pb-2">
+                  <User className="h-5 w-5 text-[#FFD600]" /> Personal Details
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm text-gray-400">Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      placeholder="e.g. Rahul"
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFD600] focus:ring-1 focus:ring-[#FFD600] transition-all"
+                      value={profile.name}
+                      onChange={e => setProfile({...profile, name: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm text-gray-400">Age</label>
+                    <input 
+                      required
+                      type="number" 
+                      placeholder="e.g. 24"
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFD600] focus:ring-1 focus:ring-[#FFD600] transition-all"
+                      value={profile.age}
+                      onChange={e => setProfile({...profile, age: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm text-gray-400">Height (cm)</label>
+                    <input 
+                      required
+                      type="number" 
+                      placeholder="e.g. 175"
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFD600] focus:ring-1 focus:ring-[#FFD600] transition-all"
+                      value={profile.height}
+                      onChange={e => setProfile({...profile, height: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm text-gray-400">Weight (kg)</label>
+                    <input 
+                      required
+                      type="number" 
+                      placeholder="e.g. 70"
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFD600] focus:ring-1 focus:ring-[#FFD600] transition-all"
+                      value={profile.weight}
+                      onChange={e => setProfile({...profile, weight: e.target.value})}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div className="space-y-3">
+                <label className="text-sm text-gray-400">Gender</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {["Male", "Female"].map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setProfile({...profile, gender: g as Gender})}
+                      className={`py-3 px-4 rounded-xl border font-medium transition-all ${
+                        profile.gender === g 
+                        ? "bg-[#FFD600]/10 border-[#FFD600] text-[#FFD600]" 
+                        : "bg-black/50 border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
+                      }`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Goal */}
+              <div className="space-y-3">
+                <label className="text-sm text-gray-400 flex items-center gap-2">
+                  <Flame className="h-4 w-4" /> Primary Goal
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {["Fat Loss", "Muscle Gain", "Beginner", "Women Fitness", "Home Workout"].map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setProfile({...profile, goal: g as Goal})}
+                      className={`py-3 px-3 rounded-xl border text-sm font-medium transition-all ${
+                        profile.goal === g 
+                        ? "bg-[#FFD600] border-[#FFD600] text-black shadow-[0_0_15px_rgba(255,214,0,0.3)]" 
+                        : "bg-black/50 border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
+                      }`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Diet & Location */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="text-sm text-gray-400 flex items-center gap-2">
+                    <Utensils className="h-4 w-4" /> Diet Preference
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["Veg", "Non-Veg"].map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setProfile({...profile, diet: d as DietType})}
+                        className={`py-3 px-2 rounded-xl border text-sm font-medium transition-all ${
+                          profile.diet === d 
+                          ? "bg-[#FFD600]/10 border-[#FFD600] text-[#FFD600]" 
+                          : "bg-black/50 border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <label className="text-sm text-gray-400 flex items-center gap-2">
+                    <MapPin className="h-4 w-4" /> Where will you workout?
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["Home", "Gym"].map((l) => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setProfile({...profile, location: l as Location})}
+                        className={`py-3 px-2 rounded-xl border text-sm font-medium transition-all ${
+                          profile.location === l 
+                          ? "bg-[#FFD600]/10 border-[#FFD600] text-[#FFD600]" 
+                          : "bg-black/50 border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <button 
+                  type="submit"
+                  disabled={!profile.name || !profile.age || !profile.height || !profile.weight || !profile.gender || !profile.goal || !profile.diet || !profile.location}
+                  className="w-full bg-[#FFD600] hover:bg-[#FFD600]/90 text-black font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,214,0,0.2)] hover:shadow-[0_0_30px_rgba(255,214,0,0.4)]"
+                >
+                  Generate My Plan <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+
+        {/* STEP 2: LOADING */}
+        {step === 2 && (
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="flex flex-col items-center justify-center py-32 space-y-6"
+          >
+            <div className="relative">
+              <div className="w-20 h-20 border-4 border-white/10 border-t-[#FFD600] rounded-full animate-spin"></div>
+              <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-[#FFD600]" />
+            </div>
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold">Analyzing Profile...</h2>
+              <p className="text-gray-400 text-sm animate-pulse">Building the perfect Indian fitness plan for your goals</p>
+            </div>
+            <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full bg-[#FFD600] w-1/2 animate-[slide_1.5s_ease-in-out_infinite]"></div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STEP 3: RESULTS */}
+        {step === 3 && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            {/* Header Actions */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.02] border border-white/10 p-4 rounded-2xl">
+              <div>
+                <h2 className="text-xl font-bold">Hey {profile.name}, your plan is ready! 🎯</h2>
+                <p className="text-sm text-gray-400">Customized for {profile.goal} • {profile.diet} • {profile.location}</p>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={() => alert("Downloading PDF Report...")}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Download className="h-4 w-4" /> PDF
+                </button>
+                <button 
+                  onClick={() => alert("Opening WhatsApp to share...")}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Share2 className="h-4 w-4" /> Share
+                </button>
+              </div>
+            </div>
+
+            {/* Diet Plan */}
+            <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
+              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="bg-[#FFD600]/10 p-2.5 rounded-xl">
+                  <Utensils className="h-6 w-6 text-[#FFD600]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Simple Indian Diet</h3>
+                  <p className="text-sm text-gray-400">Easy to make at home</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <DietItem time="Morning (8 AM)" meal="Oats with Milk & Banana OR Poha with Peanuts" />
+                <DietItem time="Lunch (1 PM)" meal={`2 Roti, 1 Bowl Dal, Sabzi, ${profile.diet === "Non-Veg" ? "2 Boiled Eggs/Chicken Tikka" : "1 Bowl Curd/Paneer"}`} />
+                <DietItem time="Evening (5 PM)" meal="Black Coffee/Tea + Roasted Chana or Makhana" />
+                <DietItem time="Dinner (8 PM)" meal={`1 Roti, Dal, Salad, ${profile.diet === "Non-Veg" ? "Grilled Chicken" : "Soya Chunks/Paneer Bhurji"}`} />
+              </div>
+            </div>
+
+            {/* Workout Plan */}
+            <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
+              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="bg-[#FFD600]/10 p-2.5 rounded-xl">
+                  <Dumbbell className="h-6 w-6 text-[#FFD600]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Workout Routine</h3>
+                  <p className="text-sm text-gray-400">{profile.location} Workout • 45 mins/day</p>
+                </div>
+              </div>
+              
+              <div className="grid gap-4">
+                {profile.location === "Home" ? (
+                  <>
+                    <WorkoutItem exercise="Jumping Jacks (Warmup)" sets="3 sets" reps="30 secs" />
+                    <WorkoutItem exercise="Push-ups" sets="3 sets" reps="10-15 reps" />
+                    <WorkoutItem exercise="Bodyweight Squats" sets="3 sets" reps="15-20 reps" />
+                    <WorkoutItem exercise="Plank" sets="3 sets" reps="45 secs" />
+                  </>
+                ) : (
+                  <>
+                    <WorkoutItem exercise="Treadmill/Cycling (Warmup)" sets="1 set" reps="10 mins" />
+                    <WorkoutItem exercise="Machine Chest Press" sets="3 sets" reps="12 reps" />
+                    <WorkoutItem exercise="Lat Pulldown" sets="3 sets" reps="12 reps" />
+                    <WorkoutItem exercise="Leg Press / Squats" sets="3 sets" reps="12-15 reps" />
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Daily Timetable & Water */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Clock className="h-5 w-5 text-[#FFD600]" />
+                  <h3 className="font-bold">Daily Timetable</h3>
+                </div>
+                <ul className="space-y-3 text-sm text-gray-300">
+                  <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-[#FFD600] mt-0.5 shrink-0" /> Wake up before 7:30 AM</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-[#FFD600] mt-0.5 shrink-0" /> Workout in Morning or 6 PM</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-[#FFD600] mt-0.5 shrink-0" /> 7-8 hours of sleep required</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-[#FFD600] mt-0.5 shrink-0" /> Walk 5,000 steps daily</li>
+                </ul>
+              </div>
+              
+              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Droplets className="h-5 w-5 text-[#3b82f6]" />
+                  <h3 className="font-bold">Water Intake</h3>
+                </div>
+                <div className="text-center py-4">
+                  <div className="text-4xl font-black mb-2 text-[#FFD600]">3-4<span className="text-xl text-gray-400"> Litres</span></div>
+                  <p className="text-sm text-gray-400">Carry a 1L bottle and refill 3 times.</p>
                 </div>
               </div>
             </div>
-            
-            <div className="space-y-1">
-              <p className="text-gray-400 font-medium text-sm tracking-wide uppercase">{stat.label}</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black tracking-tight">{stat.value}</span>
-                <span className="text-gray-500 font-bold text-sm">{stat.unit}</span>
-              </div>
+
+            <div className="pt-6 pb-12 flex justify-center">
+              <button 
+                onClick={() => { setStep(1); setProfile({...profile, name: "", age: "", height: "", weight: ""})}}
+                className="text-gray-400 hover:text-white underline text-sm transition-colors"
+              >
+                Start Over
+              </button>
             </div>
           </motion.div>
-        ))}
+        )}
+      </AnimatePresence>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes slide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+      `}} />
+    </div>
+  );
+}
+
+function DietItem({ time, meal }: { time: string, meal: string }) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-black/30 border border-white/5 gap-2">
+      <span className="text-[#FFD600] font-medium text-sm whitespace-nowrap">{time}</span>
+      <span className="text-gray-300 text-sm sm:text-right">{meal}</span>
+    </div>
+  );
+}
+
+function WorkoutItem({ exercise, sets, reps }: { exercise: string, sets: string, reps: string }) {
+  return (
+    <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/5">
+      <span className="font-medium text-white">{exercise}</span>
+      <div className="flex items-center gap-3 text-sm">
+        <span className="text-gray-400">{sets}</span>
+        <span className="bg-white/10 px-2 py-1 rounded text-[#FFD600] font-medium">{reps}</span>
       </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* Main Charts Area */}
-        <div className="xl:col-span-2 space-y-6">
-          
-          <motion.div variants={itemVariants} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 sm:p-8">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-xl font-black tracking-tight flex items-center gap-3">
-                <div className="w-2 h-8 bg-[#FFD600] rounded-full shadow-[0_0_10px_rgba(255,214,0,0.5)]"></div>
-                Metabolic Output
-              </h3>
-              <select className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-gray-300 outline-none">
-                <option>This Week</option>
-                <option>Last Week</option>
-              </select>
-            </div>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                  <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-                  <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    cursor={{ fill: '#ffffff05' }} 
-                    contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #333', borderRadius: '16px', color: '#fff', fontWeight: 'bold' }} 
-                  />
-                  <Bar dataKey="calories" fill="#FFD600" radius={[6, 6, 0, 0]} barSize={40}>
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] p-6 sm:p-8">
-            <h3 className="text-xl font-black tracking-tight flex items-center gap-3 mb-8">
-              <div className="w-2 h-8 bg-white rounded-full"></div>
-              Body Composition Trend
-            </h3>
-            <div className="h-[250px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={weightData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                  <XAxis dataKey="date" stroke="#888" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-                  <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 1', 'dataMax + 1']} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #333', borderRadius: '16px', fontWeight: 'bold' }} />
-                  <Area type="monotone" dataKey="weight" stroke="#ffffff" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" activeDot={{ r: 8, fill: '#FFD600', stroke: '#000', strokeWidth: 4 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Side Panel Area */}
-        <div className="space-y-6">
-          
-          {/* Daily Protocol */}
-          <motion.div variants={itemVariants} className="bg-gradient-to-b from-[#1a1a1a] to-black border border-white/10 rounded-[32px] p-6 sm:p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFD600]/10 rounded-full blur-[50px]"></div>
-            
-            <h3 className="text-xl font-black mb-6 tracking-tight">Daily Protocol</h3>
-            
-            <div className="relative border-l-2 border-white/10 pl-6 ml-3 space-y-8">
-              {timetable.map((item, i) => (
-                <div key={i} className="relative">
-                  <div className={`absolute -left-[35px] top-1 w-4 h-4 rounded-full border-4 border-black ${item.active ? 'bg-[#FFD600] shadow-[0_0_10px_#FFD600]' : 'bg-gray-600'}`} />
-                  <p className="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1"><Clock className="w-3 h-3" /> {item.time}</p>
-                  <p className={`font-bold ${item.active ? 'text-white text-lg' : 'text-gray-400'}`}>{item.task}</p>
-                  {item.active && (
-                    <Link href="/dashboard/workouts" className="mt-3 inline-flex items-center gap-1 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors">
-                      Execute <ChevronRight className="w-3 h-3" />
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* AI Coach Insight */}
-          <motion.div variants={itemVariants} className="bg-[#FFD600] text-black rounded-[32px] p-6 sm:p-8 relative overflow-hidden group">
-            <div className="absolute -right-8 -top-8 text-black/10 group-hover:scale-110 transition-transform duration-500">
-              <Brain className="w-48 h-48" />
-            </div>
-            
-            <h3 className="text-xl font-black mb-4 flex items-center gap-2 relative z-10">
-              <Brain className="w-6 h-6" /> AI Intelligence
-            </h3>
-            <p className="text-black/80 font-bold leading-relaxed mb-6 relative z-10">
-              "HRV indicates prime readiness. Increasing volume on compound lifts by 5% today is recommended."
-            </p>
-            <Link href="/dashboard/ai-coach" className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-white hover:text-black transition-colors relative z-10 shadow-lg">
-              View Analysis <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-
-        </div>
-      </div>
-    </motion.div>
+    </div>
   );
 }
